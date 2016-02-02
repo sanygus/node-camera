@@ -1,0 +1,28 @@
+{
+  "name": "node-camera",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "eslint ./src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanygus/node-camera.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sanygus/node-camera/issues"
+  },
+  "homepage": "https://github.com/sanygus/node-camera#readme",
+  "dependencies": {
+    "camerapi": "^0.1.0",
+    "dateformat": "^1.0.12",
+    "socket.io-client": "^1.4.5"
+  },
+  "devDependencies": {
+    "eslint": "^1.10.3",
+    "eslint-config-airbnb": "^4.0.0"
+  }
+}
