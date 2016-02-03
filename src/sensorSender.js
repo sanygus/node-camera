@@ -14,23 +14,29 @@ function getSensors(callback) {
   /* test values */
   async.parallel([
     function getTemperature(callbackAsync) {
+      var temperature;
       // opt/vc/bin/vcgencmd measure_temp
       exec.exec('echo 12345678910', function cbExec(err, stdout, stderr) {
+        if (err) { throw err; }
         if (stderr) { throw stderr; }
-        callbackAsync(err, stdout);
+        temperature = stdout.substring(5, 11);
+        callbackAsync(null, temperature);
       });
     },
     function getPingTime(callbackAsync) {
+      var pingTime;
       exec.exec('ping -c 1 -w 1 8.8.8.9;exit 0', function cbExec(err, stdout, stderr) {
+        if (err) { throw err; }
         if (stderr) { throw stderr; }
-        callbackAsync(err, stdout);
+        pingTime = stdout.substring(91, 98);
+        if (pingTime === 'nsmitte') { pingTime = null; }
+        callbackAsync(null, pingTime);
       });
     },
   ], function cbAsync(err, results) {
     if (err) { throw err; }
-    sensorsValues.cputemp = results[0].substring(5, 11);
-    sensorsValues.pingtime = results[1].substring(91, 98);
-    if (sensorsValues.pingtime === 'nsmitte') { sensorsValues.pingtime = null; }
+    sensorsValues.cputemp = results[0];
+    sensorsValues.pingtime = results[1];
     callback(sensorsValues);
   });
 }
