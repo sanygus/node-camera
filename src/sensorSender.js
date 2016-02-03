@@ -4,6 +4,7 @@ var dateformat = require('dateformat');
 var fs = require('fs');
 var path = require('path');
 var async = require('async');
+var log = require('./log');
 
 function getSensors(callback) {
   var sensorsValues = {
@@ -42,7 +43,7 @@ function getSensors(callback) {
 }
 
 function getSensorsFromFile(callback) {
-  fs.exists(options.sensorsFile, function cb(exist) {
+  fs.exists(path.resolve(options.sensorsFile), function cb(exist) {
     if (exist) {
       fs.readFile(path.resolve(options.sensorsFile), 'utf8', function cbReadFile(err, data) {
         if (data !== '') {
@@ -60,7 +61,7 @@ function getSensorsFromFile(callback) {
 
 function sendSensors(socket, values) {
   if (socket.connected) {
-    console.log(values);
+    log(values);
     socket.emit(options.serverSensorsEvent, values);
 
     getSensorsFromFile(function cb(valuesFile) {

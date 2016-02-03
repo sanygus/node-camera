@@ -4,13 +4,14 @@ var fileSender = require('./fileSender');
 var photoShooter = require('./photoShooter');
 var videoShooter = require('./videoShooter');
 var socket = require('socket.io-client').connect(options.serverAddress);
+var log = require('./log');
 
 socket.on('connect', function cb() {
-  console.log('connected to server ', options.serverAddress);
+  log('connected to server ' + options.serverAddress);
 });
 
 socket.on('disconnect', function cb() {
-  console.log('disconnected from server');
+  log('disconnected from server');
 });
 
 sensorSender(socket);

@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var statisticsSender = require('./statisticsSender');
+var log = require('./log');
 
 function getFileToSend(dirPath, callback) {
   fs.readdir(path.resolve(dirPath), function cbReadDir(err, files) {
@@ -22,7 +23,7 @@ function sendFile(socket, filePath, callback) {
   if (socket.connected) {
     fs.readFile(filePath, function cb(err, data) {
       if (err) { throw err; }
-      console.log('sending ', filePath);
+      log('sending ' + filePath);
       startTime = new Date();
       socket.emit(
         'file',

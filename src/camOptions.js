@@ -25,4 +25,5 @@ module.exports = {
       interval: 5000, // ms
     },
   },
+  logFile: '/tmp/log',
 };
