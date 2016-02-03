@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/sanygus/node-camera#readme",
   "dependencies": {
+    "async": "^1.5.2",
     "camerapi": "^0.1.0",
     "dateformat": "^1.0.12",
     "socket.io-client": "^1.4.5"

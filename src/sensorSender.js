@@ -3,6 +3,7 @@ var exec = require('child_process');
 var dateformat = require('dateformat');
 var fs = require('fs');
 var path = require('path');
+var async = require('async');
 
 function getSensors(callback) {
   var sensorsValues = {
@@ -11,13 +12,27 @@ function getSensors(callback) {
     pingtime: null,
   };
   /* test values */
-  sensorsValues.cputemp = exec.execSync('/opt/vc/bin/vcgencmd measure_temp')
-  .toString().substring(5, 11);
-  sensorsValues.pingtime = exec.execSync('ping -c 1 -w 1 8.8.8.8;exit 0')
-  .toString().substring(91, 98);
-  if (sensorsValues.pingtime === 'nsmitte') { sensorsValues.pingtime = null; }
-
-  callback(sensorsValues);
+  async.parallel([
+    function getTemperature(callbackAsync) {
+      // opt/vc/bin/vcgencmd measure_temp
+      exec.exec('echo 12345678910', function cbExec(err, stdout, stderr) {
+        if (stderr) { throw stderr; }
+        callbackAsync(err, stdout);
+      });
+    },
+    function getPingTime(callbackAsync) {
+      exec.exec('ping -c 1 -w 1 8.8.8.9;exit 0', function cbExec(err, stdout, stderr) {
+        if (stderr) { throw stderr; }
+        callbackAsync(err, stdout);
+      });
+    },
+  ], function cbAsync(err, results) {
+    if (err) { throw err; }
+    sensorsValues.cputemp = results[0].substring(5, 11);
+    sensorsValues.pingtime = results[1].substring(91, 98);
+    if (sensorsValues.pingtime === 'nsmitte') { sensorsValues.pingtime = null; }
+    callback(sensorsValues);
+  });
 }
 
 function getSensorsFromFile(callback) {
