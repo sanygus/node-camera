@@ -45,7 +45,7 @@ function trySendNewestFile(socket, dirPath, callback) {
     if (filePath) {
       sendFile(socket, filePath, function cbSendFile(errSendFile, sent) {
         if (errSendFile) { throw errSendFile; }
-        if (sent) {// ?
+        if (sent) {
           fs.unlink(filePath, function cbUnlink() {
             callback(null, true);
           });

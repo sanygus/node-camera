@@ -75,10 +75,10 @@ function sendSensors(socket, values) {
 }
 
 module.exports = function sensorSender(socket) {
-  setInterval(function cbInterval() {
+  setTimeout(function funcTimeout() {
     getSensors(function cbGetSensors(sensorsValues) {
       sendSensors(socket, sensorsValues);
+      sensorSender(socket);
     });
   }, options.sensorsInterval);
 };
-/* TODO: setTimeout */

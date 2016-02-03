@@ -8,7 +8,7 @@ module.exports = {
   fileSenderInterval: 2000,
   defaultSettings: {
     photo: {
-      enabled: true,
+      enabled: false,
       width: 2592, // px
       height: 1944, // px
       quality: 100, // %
