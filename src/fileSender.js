@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var statisticsSender = require('./statisticsSender');
 var log = require('./log');
+var statisticsWriter = require('./statisticsWriter');
 
 function getFileToSend(dirPath, callback) {
   fs.readdir(path.resolve(dirPath), function cbReadDir(err, files) {
