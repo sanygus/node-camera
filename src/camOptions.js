@@ -26,6 +26,6 @@ module.exports = {
     },
   },
   logFile: '/tmp/log',
-  statisticsFile = '/tmp/stat'
-  statisticsInterval = 10000,
+  statisticsFile: '/tmp/stat',
+  statisticsInterval: 10000,
 };

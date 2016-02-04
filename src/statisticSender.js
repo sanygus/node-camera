@@ -9,15 +9,14 @@ function sendStat(socket, object, callback) {
   } else {
     callback(null, false);
   }
-};
+}
 
 function getStatFromFile(statFile, callback) {
-  var str;
   fs.exists(path.resolve(statFile), function cbExist(exist) {
     if (exist) {
       fs.readFile(path.resolve(statFile), function cbReadFile(err, data) {
         if (err) { throw err; }
-        if (data != '') {
+        if (data !== '') {
           callback(null, JSON.parse());// end
         } else {
           callback(null, false);
@@ -37,12 +36,12 @@ function deleteObjectFromFile(file, object, callback) {
     if (data.length > newdata.length + objectString.length) {
       newdata += data.substring(newdata.length + objectString.length);
     }
-    fs.writeFile(path.resolve(file), newdata, function cbWriteFile(err) {
-      callback(err);
+    fs.writeFile(path.resolve(file), newdata, function cbWriteFile(errWriteFile) {
+      callback(errWriteFile);
       console.log('object deleted');
     });
   });
-};
+}
 
 function statisticsSender(socket, statFile, interval) {
   function runAgain() {
@@ -56,7 +55,7 @@ function statisticsSender(socket, statFile, interval) {
         if (errSendFile) { throw errSendFile; }
         if (sent) {
           deleteObjectFromFile(statFile, object, function cbDelObj(errDelObj) {
-            if (errDelFile) { throw errDelFile; }
+            if (errDelObj) { throw errDelObj; }
             setImmediate(runAgain);
           });
         } else {
@@ -67,7 +66,7 @@ function statisticsSender(socket, statFile, interval) {
       setTimeout(runAgain, interval);
     }
   });
-};
+}
 
 module.exports = function statisticsSenderInit(socket, statFile, interval) {
   statisticsSender(socket, statFile, interval);

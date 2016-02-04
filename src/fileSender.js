@@ -1,6 +1,5 @@
 var fs = require('fs');
 var path = require('path');
-var statisticsSender = require('./statisticsSender');
 var log = require('./log');
 var statisticsWriter = require('./statisticsWriter');
 
@@ -31,7 +30,10 @@ function sendFile(socket, filePath, callback) {
         { filename: path.basename(filePath), content: data },
         function cbEmit() {
           callback(null, true);
-          statisticsSender(socket, data.length, (new Date() - startTime));
+          statisticsWriter({
+            size: data.length,
+            time: (new Date() - startTime),
+          }); // допилить
         }
       );
     });
