@@ -5,13 +5,14 @@ var path = require('path');
 
 module.exports = function log(data) {
   var str = '';
-  if (typeof(data) === 'object') {
-    str = JSON.stringify(data);
+  if (typeof(data) === 'string') {
+    str = data.substring(0);
   } else {
-    str = data;
+    str = JSON.stringify(data);
   }
   fs.appendFile(
    path.resolve(options.logFile),
    dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss    ') + str + '\n'
   );
+  console.log(str);
 };

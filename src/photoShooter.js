@@ -1,6 +1,7 @@
 var options = require('./camOptions');
 var dateformat = require('dateformat');
 var settings = options.defaultSettings.photo;
+var photoEnabled = settings.enabled; // temp
 var path = require('path');
 var Camera = require('camerapi');
 var cam = new Camera();
@@ -22,7 +23,7 @@ function takePhoto(callback) {
 
 module.exports = function photoShooter() {
   setTimeout(function cb() {
-    if (settings.enabled) {
+    if (photoEnabled) {
       takePhoto(function cbTakePhoto() {
         photoShooter();
       });
@@ -30,4 +31,12 @@ module.exports = function photoShooter() {
       photoShooter();
     }
   }, settings.interval);
+};
+
+module.exports.on = function photoOn() {
+  photoEnabled = true;
+};
+
+module.exports.off = function photoOff() {
+  photoEnabled = false;
 };

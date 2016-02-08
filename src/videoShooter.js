@@ -1,5 +1,6 @@
 var options = require('./camOptions');
 var settings = options.defaultSettings.video;
+var videoEnabled = settings.enabled; // temp
 var dateformat = require('dateformat');
 var path = require('path');
 var Camera = require('camerapi');
@@ -24,7 +25,7 @@ function takeVideo(callback) {
 
 module.exports = function videoShooter() {
   setTimeout(function cb() {
-    if (settings.enabled) {
+    if (videoEnabled) {
       takeVideo(function cbTakeVideo() {
         videoShooter();
       });
@@ -32,4 +33,12 @@ module.exports = function videoShooter() {
       videoShooter();
     }
   }, settings.interval);
+};
+
+module.exports.on = function videoOn() {
+  videoEnabled = true;
+};
+
+module.exports.off = function videoOff() {
+  videoEnabled = false;
 };

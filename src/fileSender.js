@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
+var statisticsSender = require('./statisticsSender');
 var log = require('./log');
-var statisticsWriter = require('./statisticsWriter');
 
 function getFileToSend(dirPath, callback) {
   fs.readdir(path.resolve(dirPath), function cbReadDir(err, files) {
@@ -30,10 +30,10 @@ function sendFile(socket, filePath, callback) {
         { filename: path.basename(filePath), content: data },
         function cbEmit() {
           callback(null, true);
-          statisticsWriter({
+          statisticsSender.takeStat({
             size: data.length,
-            time: (new Date() - startTime),
-          }); // допилить
+            time: new Date() - startTime,
+          });
         }
       );
     });
