@@ -21,7 +21,7 @@ function takePhoto(callback) {
   );
 }
 
-module.exports = function photoShooter() {
+function photoShooter() {
   setTimeout(function cb() {
     if (photoEnabled) {
       takePhoto(function cbTakePhoto() {
@@ -31,7 +31,9 @@ module.exports = function photoShooter() {
       photoShooter();
     }
   }, settings.interval);
-};
+}
+
+photoShooter();
 
 module.exports.on = function photoOn() {
   photoEnabled = true;

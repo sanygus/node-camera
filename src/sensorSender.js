@@ -1,4 +1,5 @@
 var options = require('./camOptions');
+var connection = require('./connection');
 var exec = require('child_process');
 var dateformat = require('dateformat');
 var fs = require('fs');
@@ -27,7 +28,7 @@ function getSensors(callback) {
       var pingTime;
       exec.exec('ping -c 1 -w 1 8.8.8.8;exit 0', function cbExec(err, stdout, stderr) {
         if (err) { throw err; }
-        if (stderr) { /* throw stderr; */ }
+        if (stderr) { throw stderr; }
         pingTime = stdout.substring(91, 98);
         if (pingTime === 'nsmitte') { pingTime = null; }
         callbackAsync(null, pingTime);
@@ -73,11 +74,16 @@ function sendSensors(socket, values) {
   }
 }
 
-module.exports = function sensorSender(socket) {
+function sensorSender() {
   setTimeout(function funcTimeout() {
     getSensors(function cbGetSensors(sensorsValues) {
-      sendSensors(socket, sensorsValues);
-      sensorSender(socket);
+      connection.getSocket(function cdGetSocket(err, socket) {
+        if (err) { throw err; }
+        sendSensors(socket, sensorsValues);
+        sensorSender();
+      });
     });
   }, options.sensorsInterval);
-};
+}
+
+sensorSender();

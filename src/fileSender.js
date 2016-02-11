@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var statisticsSender = require('./statisticsSender');
+var connection = require('./connection');
 var log = require('./log');
 
 function getFileToSend(dirPath, callback) {
@@ -42,19 +43,22 @@ function sendFile(socket, filePath, callback) {
   }
 }
 
-function trySendNewestFile(socket, dirPath, callback) {
+function trySendNewestFile(dirPath, callback) {
   getFileToSend(dirPath, function cb(err, filePath) {
     if (err) { throw err; }
     if (filePath) {
-      sendFile(socket, filePath, function cbSendFile(errSendFile, sent) {
-        if (errSendFile) { throw errSendFile; }
-        if (sent) {
-          fs.unlink(filePath, function cbUnlink() {
-            callback(null, true);
-          });
-        } else {
-          callback(null, false);
-        }
+      connection.getSocket(function cdGetSocket(errGetSocket, socket) {
+        if (errGetSocket) { throw errGetSocket; }
+        sendFile(socket, filePath, function cbSendFile(errSendFile, sent) {
+          if (errSendFile) { throw errSendFile; }
+          if (sent) {
+            fs.unlink(filePath, function cbUnlink() {
+              callback(null, true);
+            });
+          } else {
+            callback(null, false);
+          }
+        });
       });
     } else {
       callback(null, false);
@@ -62,12 +66,12 @@ function trySendNewestFile(socket, dirPath, callback) {
   });
 }
 
-function fileSender(socket, dirPath, interval) {
+function fileSender(dirPath, interval) {
   function runAgain() {
-    fileSender(socket, dirPath, interval);
+    fileSender(dirPath, interval);
   }
 
-  trySendNewestFile(socket, dirPath, function cb(err, sent) {
+  trySendNewestFile(dirPath, function cb(err, sent) {
     if (err) { throw err; }
     if (sent) {
       setImmediate(runAgain);
@@ -77,6 +81,6 @@ function fileSender(socket, dirPath, interval) {
   });
 }
 
-module.exports = function startFileSender(socket, dirPath, interval) {
-  fileSender(socket, dirPath, interval);
+module.exports = function startFileSender(dirPath, interval) {
+  fileSender(dirPath, interval);
 };

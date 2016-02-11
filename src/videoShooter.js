@@ -23,7 +23,7 @@ function takeVideo(callback) {
     );
 }
 
-module.exports = function videoShooter() {
+function videoShooter() {
   setTimeout(function cb() {
     if (videoEnabled) {
       takeVideo(function cbTakeVideo() {
@@ -33,12 +33,14 @@ module.exports = function videoShooter() {
       videoShooter();
     }
   }, settings.interval);
-};
+}
 
-module.exports.on = function videoOn() {
+videoShooter();
+
+module.exports.on = function photoOn() {
   videoEnabled = true;
 };
 
-module.exports.off = function videoOff() {
+module.exports.off = function photoOff() {
   videoEnabled = false;
 };

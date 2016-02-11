@@ -1,6 +1,7 @@
 var dateformat = require('dateformat');
 var async = require('async');
 var exec = require('child_process');
+var connection = require('./connection');
 var log = require('./log');
 var DataStore = require('nedb');
 
@@ -53,32 +54,35 @@ function getSystemStat(interval) {
   });
 }
 
-function statisticsSender(socket, interval) {
+function statisticsSender(interval) {
   function runAgain() {
-    statisticsSender(socket, interval);
+    statisticsSender(interval);
   }
 
-  if (socket.connected) {
-    db.findOne({}).sort({ date: -1 }).exec(function cbFind(err, doc) {
-      if (err) { throw err; }
-      if (doc) {
-        socket.emit('statistics', doc, function cbEmit() {
-          db.remove({ _id: doc._id }, {}, function cbRemove(errRemove/* , numRemoved*/) {
-            if (errRemove) { throw errRemove; }
-            runAgain();
+  connection.getSocket(function cdGetSocket(err, socket) {
+    if (err) { throw err; }
+    if (socket.connected) {
+      db.findOne({}).sort({ date: -1 }).exec(function cbFind(errFind, doc) {
+        if (errFind) { throw errFind; }
+        if (doc) {
+          socket.emit('statistics', doc, function cbEmit() {
+            db.remove({ _id: doc._id }, {}, function cbRemove(errRemove/* , numRemoved*/) {
+              if (errRemove) { throw errRemove; }
+              runAgain();
+            });
           });
-        });
-      } else {
-        setTimeout(runAgain, interval);
-      }
-    });
-  } else {
-    setTimeout(runAgain, interval);
-  }
+        } else {
+          setTimeout(runAgain, interval);
+        }
+      });
+    } else {
+      setTimeout(runAgain, interval);
+    }
+  });
 }
 
-module.exports = function statisticsSenderInit(socket, interval, systemStatInterval) {
-  statisticsSender(socket, interval);
+module.exports = function statisticsSenderInit(interval, systemStatInterval) {
+  statisticsSender(interval);
   getSystemStat(systemStatInterval);
 };
 
