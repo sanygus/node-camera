@@ -1,11 +1,13 @@
 var dateformat = require('dateformat');
 var async = require('async');
-var exec = require('child_process');
+var path = require('path');
 var connection = require('./connection');
 var log = require('./log');
 var DataStore = require('nedb');
+var os = require('os');
+var diskspace = require('diskspace');
 
-var db = new DataStore({ filename: '/tmp/camdb', autoload: true });
+var db;
 
 function takeStat(object) {
   var newObject = {};
@@ -29,17 +31,27 @@ function takeStat(object) {
 function getSystemStat(interval) {
   async.parallel([
     function getUptime(callbackAsync) {
-      exec.exec('uptime', function cbExec(err, stdout, stderr) {
-        if (err) { throw err; }
-        if (stderr) { throw stderr; }
-        callbackAsync(null, stdout);
-      });
+      callbackAsync(null, os.uptime());
     },
     function getPingTime(callbackAsync) {
-      exec.exec('df -h /tmp', function cbExec(err, stdout, stderr) {
+      var drive;
+      switch (os.type()) {
+        case 'Linux':
+          drive = '/tmp';
+          break;
+        case 'Windows':
+          drive = 'C';
+          break;
+        default:
+          drive = '';
+          break;
+      }
+      diskspace.check(drive, function cdCheck(err, total, free, status) {
         if (err) { throw err; }
-        if (stderr) { throw stderr; }
-        callbackAsync(null, stdout);
+        if (status !== 'READY') {
+          throw new Error('disk error');
+        }
+        callbackAsync(null, free);
       });
     },
   ], function cbAsync(err, results) {
@@ -81,9 +93,10 @@ function statisticsSender(interval) {
   });
 }
 
-module.exports = function statisticsSenderInit(interval, systemStatInterval) {
+module.exports = function statisticsSenderInit(interval, systemStatInterval, dbFile) {
   statisticsSender(interval);
   getSystemStat(systemStatInterval);
+  db = new DataStore({ filename: path.resolve(dbFile), autoload: true });
 };
 
 module.exports.takeStat = takeStat;

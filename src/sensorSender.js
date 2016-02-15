@@ -6,6 +6,7 @@ var fs = require('fs');
 var path = require('path');
 var async = require('async');
 var log = require('./log');
+var os = require('os');
 
 function getSensors(callback) {
   var sensorsValues = {
@@ -17,12 +18,16 @@ function getSensors(callback) {
   async.parallel([
     function getTemperature(callbackAsync) {
       var temperature;
-      exec.exec('/opt/vc/bin/vcgencmd measure_temp', function cbExec(err, stdout, stderr) {
-        if (err) { throw err; }
-        if (stderr) { throw stderr; }
-        temperature = stdout.substring(5, 11);
-        callbackAsync(null, temperature);
-      });
+      if (os.hostname() === options.RPiHostname) {
+        exec.exec('/opt/vc/bin/vcgencmd measure_temp', function cbExec(err, stdout, stderr) {
+          if (err) { throw err; }
+          if (stderr) { throw stderr; }
+          temperature = stdout.substring(5, 11);
+        });
+      } else {
+        temperature = '30\'C';
+      }
+      callbackAsync(null, temperature);
     },
     function getPingTime(callbackAsync) {
       var pingTime;

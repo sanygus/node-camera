@@ -28,4 +28,7 @@ module.exports = {
   logFile: '/tmp/log',
   statisticsSenderInterval: 2000,
   systemStatInterval: 10000,
+  brainInterval: 5000,
+  RPiHostname: 'raspberry',
+  dbFile: '/tmp/camdb',
 };

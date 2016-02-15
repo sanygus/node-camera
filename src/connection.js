@@ -12,6 +12,11 @@ module.exports = function connectionStart(srvAddr) {
   socket.on('disconnect', function cb() {
     log('disconnected from server');
   });
+
+  socket.on('error', function cb(err) {
+    log('connection error');
+    throw err;
+  });
 };
 
 module.exports.getSocket = function getSocket(callback) {
