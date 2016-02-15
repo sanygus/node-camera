@@ -86,4 +86,6 @@ function sensorSender() {
   }, options.sensorsInterval);
 }
 
-sensorSender();
+module.exports = function sensorSenderInit() {
+  sensorSender();
+};

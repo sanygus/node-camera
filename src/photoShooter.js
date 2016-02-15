@@ -33,7 +33,10 @@ function photoShooter() {
   }, settings.interval);
 }
 
-photoShooter();
+
+module.exports = function photoShooterInit() {
+  photoShooter();
+};
 
 module.exports.on = function photoOn() {
   photoEnabled = true;

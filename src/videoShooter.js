@@ -35,7 +35,9 @@ function videoShooter() {
   }, settings.interval);
 }
 
-videoShooter();
+module.exports = function videoShooterInit() {
+  videoShooter();
+};
 
 module.exports.on = function photoOn() {
   videoEnabled = true;
