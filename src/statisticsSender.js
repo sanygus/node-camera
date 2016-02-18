@@ -10,10 +10,12 @@ var diskspace = require('diskspace');
 var db;
 
 function takeStat(object) {
-  var newObject = {};
+  var newObject = {
+    date: dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
+    sent: false,
+  };
   var key;
   if (typeof(object) === 'object') {
-    newObject.date = dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss');
     for (key in object) {
       if (object.hasOwnProperty(key)) {
         newObject[key] = object[key];
@@ -33,7 +35,7 @@ function getSystemStat(interval) {
     function getUptime(callbackAsync) {
       callbackAsync(null, os.uptime());
     },
-    function getPingTime(callbackAsync) {
+    function getDiskSpace(callbackAsync) {
       var drive;
       switch (os.type()) {
         case 'Linux':
@@ -74,12 +76,12 @@ function statisticsSender(interval) {
   connection.getSocket(function cdGetSocket(err, socket) {
     if (err) { throw err; }
     if (socket.connected) {
-      db.findOne({}).sort({ date: -1 }).exec(function cbFind(errFind, doc) {
+      db.findOne({ sent: false }).sort({ date: -1 }).exec(function cbFind(errFind, doc) {
         if (errFind) { throw errFind; }
         if (doc) {
           socket.emit('statistics', doc, function cbEmit() {
-            db.remove({ _id: doc._id }, {}, function cbRemove(errRemove/* , numRemoved*/) {
-              if (errRemove) { throw errRemove; }
+            db.update({ _id: doc._id }, { $set: { sent: true } }, {}, function cbUpdate(errUpdate) {
+              if (errUpdate) { throw errUpdate; }
               runAgain();
             });
           });
@@ -93,10 +95,25 @@ function statisticsSender(interval) {
   });
 }
 
-module.exports = function statisticsSenderInit(interval, systemStatInterval, dbFile) {
+function getStatistics(callback) {
+  db.find({}).sort({ date: -1 }).exec(function cbFind(err, docs) {
+    if (err) { throw err; }
+    callback(null, docs);
+  });
+}
+
+module.exports.init = function statisticsSenderInit(
+  interval,
+  systemStatInterval,
+  dbFile,
+  dbCompactionInterval
+) {
   statisticsSender(interval);
   getSystemStat(systemStatInterval);
   db = new DataStore({ filename: path.resolve(dbFile), autoload: true });
+  db.persistence.setAutocompactionInterval(dbCompactionInterval);
 };
 
 module.exports.takeStat = takeStat;
+
+module.exports.getStatistics = getStatistics;

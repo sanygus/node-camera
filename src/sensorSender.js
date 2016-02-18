@@ -17,27 +17,31 @@ function getSensors(callback) {
   /* test values */
   async.parallel([
     function getTemperature(callbackAsync) {
-      var temperature;
+      var temperature = null;
       if (os.hostname() === options.RPiHostname) {
         exec.exec('/opt/vc/bin/vcgencmd measure_temp', function cbExec(err, stdout, stderr) {
           if (err) { throw err; }
           if (stderr) { throw stderr; }
-          temperature = stdout.substring(5, 11);
+          temperature = stdout.substring(5, 7);
+          callbackAsync(null, temperature);
         });
       } else {
-        temperature = '30\'C';
+        callbackAsync(null, temperature);
       }
-      callbackAsync(null, temperature);
     },
     function getPingTime(callbackAsync) {
-      var pingTime;
-      exec.exec('ping -c 1 -w 1 8.8.8.8;exit 0', function cbExec(err, stdout, stderr) {
-        if (err) { throw err; }
-        if (stderr) { throw stderr; }
-        pingTime = stdout.substring(91, 98);
-        if (pingTime === 'nsmitte') { pingTime = null; }
+      var pingTime = null;
+      if (os.type() === 'Linux') {
+        exec.exec('ping -c 1 -w 1 8.8.8.8;exit 0', function cbExec(err, stdout, stderr) {
+          if (err) { throw err; }
+          if (stderr) { throw stderr; }
+          pingTime = /time=(.+) ms/.exec(stdout);
+          if (pingTime) { pingTime = parseFloat(pingTime[1]); }
+          callbackAsync(null, pingTime);
+        });
+      } else {
         callbackAsync(null, pingTime);
-      });
+      }
     },
   ], function cbAsync(err, results) {
     if (err) { throw err; }

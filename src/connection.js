@@ -2,7 +2,7 @@ var ioClient = require('socket.io-client');
 var log = require('./log');
 var socket = {};
 
-module.exports = function connectionStart(srvAddr) {
+module.exports.init = function connectionStart(srvAddr) {
   socket = ioClient.connect(srvAddr);
 
   socket.on('connect', function cb() {

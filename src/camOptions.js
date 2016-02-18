@@ -4,7 +4,7 @@ module.exports = {
   serverFilesEvent: 'file',
   sensorsFile: '/tmp/sensors',
   filesDir: '/tmp/cam',
-  sensorsInterval: 3000,
+  sensorsInterval: 7000,
   fileSenderInterval: 2000,
   defaultSettings: {
     photo: {
@@ -31,4 +31,6 @@ module.exports = {
   brainInterval: 5000,
   RPiHostname: 'raspberry',
   dbFile: '/tmp/camdb',
+  dbCompactionInterval: 60000,
+  systemDbFile: '/tmp/camsystemdb',
 };
