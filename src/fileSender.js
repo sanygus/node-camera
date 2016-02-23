@@ -5,16 +5,22 @@ var connection = require('./connection');
 var log = require('./log');
 
 function getFileToSend(dirPath, callback) {
-  fs.readdir(path.resolve(dirPath), function cbReadDir(err, files) {
-    var filesDir;
-    if (err) { throw err; }
-    filesDir = files.slice().filter(function filesFilter(fileName) {
-      return /.*\.(jpg|h264)$/.test(fileName);
-    }).sort().reverse();
-    if (filesDir.length > 0) {
-      callback(null, path.resolve(dirPath, filesDir[0]));
+  fs.exists(path.resolve(dirPath), function cbExists(exists) {
+    if (exists) {
+      fs.readdir(path.resolve(dirPath), function cbReadDir(err, files) {
+        var filesDir;
+        if (err) { throw err; }
+        filesDir = files.slice().filter(function filesFilter(fileName) {
+          return /.*\.(jpg|h264)$/.test(fileName);
+        }).sort().reverse();
+        if (filesDir.length > 0) {
+          callback(null, path.resolve(dirPath, filesDir[0]));
+        } else {
+          callback(null, null);
+        }
+      });
     } else {
-      callback(null, null);
+      log('cam dir not exist');
     }
   });
 }

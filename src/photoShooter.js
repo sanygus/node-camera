@@ -40,9 +40,9 @@ function saveSettings() {
 }
 
 module.exports.init = function photoShooterInit() {
-  system.loadCamSettings(function cbLoad(err, loadedSettings) {
+  system.loadCamSettings('photo', function cbLoad(err, loadedSettings) {
     if (err) { throw err; }
-    settings = loadedSettings.photo;
+    settings = loadedSettings;
     photoShooter();
   });
 };

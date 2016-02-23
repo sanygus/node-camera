@@ -42,9 +42,9 @@ function saveSettings() {
 }
 
 module.exports.init = function videoShooterInit() {
-  system.loadCamSettings(function cbLoad(err, loadedSettings) {
+  system.loadCamSettings('video', function cbLoad(err, loadedSettings) {
     if (err) { throw err; }
-    settings = loadedSettings.video;
+    settings = loadedSettings;
     videoShooter();
   });
 };

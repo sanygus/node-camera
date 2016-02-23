@@ -33,4 +33,5 @@ module.exports = {
   dbFile: '/tmp/camdb',
   dbCompactionInterval: 60000,
   systemDbFile: '/tmp/camsystemdb',
+  systemDBCompactionInterval: 120000,
 };
