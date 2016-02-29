@@ -30,7 +30,6 @@ module.exports.loadCamSettings = function loadCamSettings(type, callback) {
 
 module.exports.saveCamSettings = function saveCamSettings(type, settings) {
   var typeForDB;
-  console.log('i got', settings);
   if (type === 'photo') {                   // TEMPORARY
     typeForDB = 'photoCamSettings';         //
   } else if (type === 'video') {            //
