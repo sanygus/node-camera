@@ -4,6 +4,7 @@ module.exports = {
   serverFilesEvent: 'file',
   sensorsFile: '/tmp/sensors',
   filesDir: '/tmp/cam',
+  sensorsEnabled: true,
   sensorsInterval: 7000,
   fileSenderInterval: 2000,
   defaultSettings: {

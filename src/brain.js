@@ -18,7 +18,9 @@ function decide(data, callback) {
   /* if (data[0].uptime <= 32132) {
     photoShooter.setQuality(50);
     videoShooter.setFramerate(5);
-  } */
+  }
+  sensorSender.setInterval(1000);
+  sensorSender.off(); */
   callback();
 }
 

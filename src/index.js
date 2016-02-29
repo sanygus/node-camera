@@ -19,5 +19,5 @@ fileSender(options.filesDir, options.fileSenderInterval);
 connection.init(options.serverAddress);
 photoShooter.init();
 videoShooter.init();
-sensorSender();
+sensorSender.init();
 brain();

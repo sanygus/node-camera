@@ -8,6 +8,11 @@ var async = require('async');
 var log = require('./log');
 var os = require('os');
 
+var settings = {
+  enabled: options.sensorsEnabled,
+  interval: options.sensorsInterval,
+};
+
 function getSensors(callback) {
   var sensorsValues = {
     date: dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
@@ -85,16 +90,32 @@ function sendSensors(socket, values) {
 
 function sensorSender() {
   setTimeout(function funcTimeout() {
-    getSensors(function cbGetSensors(sensorsValues) {
-      connection.getSocket(function cdGetSocket(err, socket) {
-        if (err) { throw err; }
-        sendSensors(socket, sensorsValues);
-        sensorSender();
+    if (settings.enabled) {
+      getSensors(function cbGetSensors(sensorsValues) {
+        connection.getSocket(function cdGetSocket(err, socket) {
+          if (err) { throw err; }
+          sendSensors(socket, sensorsValues);
+          sensorSender();
+        });
       });
-    });
-  }, options.sensorsInterval);
+    } else {
+      sensorSender();
+    }
+  }, settings.interval);
 }
 
-module.exports = function sensorSenderInit() {
+module.exports.init = function sensorSenderInit() {
   sensorSender();
+};
+
+module.exports.on = function sensorsOn() {
+  settings.enabled = true;
+};
+
+module.exports.off = function sensorsOff() {
+  settings.enabled = false;
+};
+
+module.exports.setInterval = function setInterval(interval) {
+  settings.interval = interval;
 };

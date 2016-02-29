@@ -26,7 +26,7 @@ function takeStat(object) {
       log(newObject);
     });
   } else {
-    log('not object');
+    log('takeStat: not object');
   }
 }
 
