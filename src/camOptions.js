@@ -26,7 +26,7 @@ module.exports = {
       interval: 5000, // ms
     },
   },
-  logFile: '/tmp/log',
+  logFile: './camera.log',
   statisticsSenderInterval: 2000,
   systemStatInterval: 10000,
   brainInterval: 5000,

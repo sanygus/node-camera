@@ -41,7 +41,7 @@ function getSystemStat(interval) {
         case 'Linux':
           drive = '/tmp';
           break;
-        case 'Windows':
+        case 'Windows_NT':
           drive = 'C';
           break;
         default:

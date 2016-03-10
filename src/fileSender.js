@@ -21,6 +21,7 @@ function getFileToSend(dirPath, callback) {
       });
     } else {
       log('cam dir not exist');
+      callback(null, null);
     }
   });
 }

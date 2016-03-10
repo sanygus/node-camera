@@ -21,6 +21,7 @@
     "camerapi": "^0.1.0",
     "dateformat": "^1.0.12",
     "diskspace": "^1.0.2",
+    "nedb": "^1.8.0",
     "socket.io-client": "^1.4.5"
   },
   "devDependencies": {
