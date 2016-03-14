@@ -1,79 +1,68 @@
-var system = require('./system');
-var options = require('./camOptions');
-var dateformat = require('dateformat');
-var path = require('path');
-var Camera = require('camerapi');
-var cam = new Camera();
+'use strict';
 
-var settings = {};
+const db = require('./db');
+const options = require('./camOptions');
+const dateformat = require('dateformat');
+const path = require('path');
+const Camera = require('camerapi');
+const cam = new Camera();
 
 cam.baseFolder(path.resolve(options.filesDir));
 
-function takePhoto(callback) {
+function takePhoto(settings, callback) {
   cam.prepare({
     timeout: settings.timeout,
     width: settings.width,
     height: settings.height,
     quality: settings.quality,
   }).takePicture(
-    dateformat(new Date(), 'yyyy-mm-dd\'T\'HH:MM:ss') + '.jpg',
-    function cbTakePicture() {
+    `${dateformat(new Date(), 'yyyy-mm-dd\'T\'HH:MM:ss')} .jpg`,
+    () => {
       callback();
     }
   );
 }
 
 function photoShooter() {
-  setTimeout(function cb() {
-    if (settings.enabled) {
-      takePhoto(function cbTakePhoto() {
+  db.loadCamSettings('photoCamSettings', (errLoad, settings) => {
+    if (errLoad) { throw errLoad; }
+    setTimeout(() => {
+      if (settings.enabled) {
+        takePhoto(settings, () => {
+          photoShooter();
+        });
+      } else {
         photoShooter();
-      });
-    } else {
-      photoShooter();
-    }
-  }, settings.interval);
-}
-
-function saveSettings() {
-  system.saveCamSettings('photo', settings);
+      }
+    }, settings.interval);
+  });
 }
 
 module.exports.init = function photoShooterInit() {
-  system.loadCamSettings('photo', function cbLoad(err, loadedSettings) {
-    if (err) { throw err; }
-    settings = loadedSettings;
-    photoShooter();
-  });
+  photoShooter();
 };
 
 module.exports.on = function photoOn() {
-  settings.enabled = true;
-  saveSettings();
+  db.saveCamSettings('photoCamSettings', 'enabled', 'true');
 };
 
 module.exports.off = function photoOff() {
-  settings.enabled = false;
-  saveSettings();
+  db.saveCamSettings('photoCamSettings', 'enabled', 'false');
 };
 
 module.exports.setTimeout = function setTimeout(timeout) {
-  settings.timeout = timeout;
-  saveSettings();
+  db.saveCamSettings('photoCamSettings', 'timeout', timeout);
 };
 
 module.exports.setResolution = function setResolution(width, height) {
-  settings.width = width;
-  settings.height = height;
-  saveSettings();
+  db.saveCamSettings('photoCamSettings', 'width', width);
+  db.saveCamSettings('photoCamSettings', 'height', height);
 };
 
 module.exports.setQuality = function setQuality(quality) {
-  settings.quality = quality;
-  saveSettings();
+  db.saveCamSettings('photoCamSettings', 'quality', quality);
 };
 
 module.exports.setInterval = function setInterval(interval) {
-  settings.interval = interval;
-  saveSettings();
+  db.saveCamSettings('photoCamSettings', 'interval', interval);
 };

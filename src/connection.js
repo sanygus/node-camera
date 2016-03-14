@@ -1,19 +1,21 @@
-var ioClient = require('socket.io-client');
-var log = require('./log');
-var socket = {};
+'use strict';
+
+const ioClient = require('socket.io-client');
+const log = require('./log');
+let socket = {};
 
 module.exports.init = function connectionStart(srvAddr) {
   socket = ioClient.connect(srvAddr);
 
-  socket.on('connect', function cb() {
-    log('connected to server ' + srvAddr);
+  socket.on('connect', () => {
+    log(`connected to server ${srvAddr}`);
   });
 
-  socket.on('disconnect', function cb() {
+  socket.on('disconnect', () => {
     log('disconnected from server');
   });
 
-  socket.on('error', function cb(err) {
+  socket.on('error', (err) => {
     log('connection error');
     throw err;
   });

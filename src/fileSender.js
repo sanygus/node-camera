@@ -1,17 +1,19 @@
-var fs = require('fs');
-var path = require('path');
-var statisticsSender = require('./statisticsSender');
-var connection = require('./connection');
-var log = require('./log');
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const statisticsSender = require('./statisticsSender');
+const connection = require('./connection');
+const log = require('./log');
 
 function getFileToSend(dirPath, callback) {
-  fs.exists(path.resolve(dirPath), function cbExists(exists) {
+  fs.exists(path.resolve(dirPath), (exists) => {
     if (exists) {
-      fs.readdir(path.resolve(dirPath), function cbReadDir(err, files) {
-        var filesDir;
+      fs.readdir(path.resolve(dirPath), (err, files) => {
+        let filesDir;
         if (err) { throw err; }
-        filesDir = files.slice().filter(function filesFilter(fileName) {
-          return /.*\.(jpg|h264)$/.test(fileName);
+        filesDir = files.slice().filter((fileName) => {
+          /.*\.(jpg|h264)$/.test(fileName);
         }).sort().reverse();
         if (filesDir.length > 0) {
           callback(null, path.resolve(dirPath, filesDir[0]));
@@ -27,16 +29,16 @@ function getFileToSend(dirPath, callback) {
 }
 
 function sendFile(socket, filePath, callback) {
-  var startTime;
+  let startTime;
   if (socket.connected) {
-    fs.readFile(filePath, function cb(err, data) {
+    fs.readFile(filePath, (err, data) => {
       if (err) { throw err; }
-      log('sending ' + filePath);
+      log(`sending ${filePath}`);
       startTime = new Date();
       socket.emit(
         'file',
         { filename: path.basename(filePath), content: data },
-        function cbEmit() {
+        () => {
           callback(null, true);
           statisticsSender.takeStat({
             size: data.length,
@@ -51,15 +53,15 @@ function sendFile(socket, filePath, callback) {
 }
 
 function trySendNewestFile(dirPath, callback) {
-  getFileToSend(dirPath, function cb(err, filePath) {
+  getFileToSend(dirPath, (err, filePath) => {
     if (err) { throw err; }
     if (filePath) {
-      connection.getSocket(function cdGetSocket(errGetSocket, socket) {
+      connection.getSocket((errGetSocket, socket) => {
         if (errGetSocket) { throw errGetSocket; }
-        sendFile(socket, filePath, function cbSendFile(errSendFile, sent) {
+        sendFile(socket, filePath, (errSendFile, sent) => {
           if (errSendFile) { throw errSendFile; }
           if (sent) {
-            fs.unlink(filePath, function cbUnlink() {
+            fs.unlink(filePath, () => {
               callback(null, true);
             });
           } else {
@@ -78,7 +80,7 @@ function fileSender(dirPath, interval) {
     fileSender(dirPath, interval);
   }
 
-  trySendNewestFile(dirPath, function cb(err, sent) {
+  trySendNewestFile(dirPath, (err, sent) => {
     if (err) { throw err; }
     if (sent) {
       setImmediate(runAgain);

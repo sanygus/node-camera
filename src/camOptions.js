@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
   serverAddress: 'http://192.168.0.122:2929',
   serverSensorsEvent: 'sensors',
@@ -8,7 +10,7 @@ module.exports = {
   sensorsInterval: 7000,
   fileSenderInterval: 2000,
   defaultSettings: {
-    photo: {
+    photoCamSettings: {
       enabled: false,
       width: 2592, // px
       height: 1944, // px
@@ -16,7 +18,7 @@ module.exports = {
       timeout: 200, // ms
       interval: 5000, // ms
     },
-    video: {
+    videoCamSettings: {
       enabled: false,
       width: 1280, // px
       height: 720, // px

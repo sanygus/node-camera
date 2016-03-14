@@ -1,14 +1,16 @@
-var options = require('./camOptions');
-var statisticsSender = require('./statisticsSender');
-/* var fileSender = require('./fileSender');
-var connection = require('./connection');
-var photoShooter = require('./photoShooter');
-var videoShooter = require('./videoShooter');
-var sensorSender = require('./sensorSender'); */
-var log = require('./log');
+'use strict';
+
+const options = require('./camOptions');
+const statisticsSender = require('./statisticsSender');
+/* const fileSender = require('./fileSender');
+const connection = require('./connection');
+const photoShooter = require('./photoShooter');
+const videoShooter = require('./videoShooter');
+const sensorSender = require('./sensorSender'); */
+const log = require('./log');
 
 function getData(callback) {
-  statisticsSender.getStatistics(function cbGetStatistics(err, docs) {
+  statisticsSender.getStatistics((err, docs) => {
     if (err) { throw err; }
     callback(null, docs);
   });
@@ -25,9 +27,9 @@ function decide(data, callback) {
 }
 
 function brain() {
-  getData(function cdGetData(err, data) {
+  getData((err, data) => {
     if (err) { throw err; }
-    decide(data, function cbDecide() {
+    decide(data, () => {
       setTimeout(brain, options.brainInterval);
     });
   });

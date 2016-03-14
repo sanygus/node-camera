@@ -1,20 +1,22 @@
-var options = require('./camOptions');
-var connection = require('./connection');
-var exec = require('child_process');
-var dateformat = require('dateformat');
-var fs = require('fs');
-var path = require('path');
-var async = require('async');
-var log = require('./log');
-var os = require('os');
+'use strict';
 
-var settings = {
+const options = require('./camOptions');
+const connection = require('./connection');
+const exec = require('child_process');
+const dateformat = require('dateformat');
+const fs = require('fs');
+const path = require('path');
+const async = require('async');
+const log = require('./log');
+const os = require('os');
+
+const settings = {
   enabled: options.sensorsEnabled,
   interval: options.sensorsInterval,
 };
 
 function getSensors(callback) {
-  var sensorsValues = {
+  const sensorsValues = {
     date: dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
     cputemp: null,
     pingtime: null,
@@ -22,9 +24,9 @@ function getSensors(callback) {
   /* test values */
   async.parallel([
     function getTemperature(callbackAsync) {
-      var temperature = null;
+      let temperature = null;
       if (os.hostname() === options.RPiHostname) {
-        exec.exec('/opt/vc/bin/vcgencmd measure_temp', function cbExec(err, stdout, stderr) {
+        exec.exec('/opt/vc/bin/vcgencmd measure_temp', (err, stdout, stderr) => {
           if (err) { throw err; }
           if (stderr) { throw stderr; }
           temperature = stdout.substring(5, 7);
@@ -35,9 +37,9 @@ function getSensors(callback) {
       }
     },
     function getPingTime(callbackAsync) {
-      var pingTime = null;
+      let pingTime = null;
       if (os.type() === 'Linux') {
-        exec.exec('ping -c 1 -w 1 8.8.8.8;exit 0', function cbExec(err, stdout, stderr) {
+        exec.exec('ping -c 1 -w 1 8.8.8.8;exit 0', (err, stdout, stderr) => {
           if (err) { throw err; }
           if (stderr) { throw stderr; }
           pingTime = /time=(.+) ms/.exec(stdout);
@@ -48,7 +50,7 @@ function getSensors(callback) {
         callbackAsync(null, pingTime);
       }
     },
-  ], function cbAsync(err, results) {
+  ], (err, results) => {
     if (err) { throw err; }
     sensorsValues.cputemp = results[0];
     sensorsValues.pingtime = results[1];
@@ -57,9 +59,9 @@ function getSensors(callback) {
 }
 
 function getSensorsFromFile(callback) {
-  fs.exists(path.resolve(options.sensorsFile), function cb(exist) {
+  fs.exists(path.resolve(options.sensorsFile), (exist) => {
     if (exist) {
-      fs.readFile(path.resolve(options.sensorsFile), 'utf8', function cbReadFile(err, data) {
+      fs.readFile(path.resolve(options.sensorsFile), 'utf8', (err, data) => {
         if (data !== '') {
           callback(JSON.parse(data.substring(data.lastIndexOf('{'), data.lastIndexOf('}') + 1)));
           fs.writeFile(path.resolve(options.sensorsFile), data.substring(0, data.lastIndexOf('{')));
@@ -78,7 +80,7 @@ function sendSensors(socket, values) {
     log(values);
     socket.emit(options.serverSensorsEvent, values);
 
-    getSensorsFromFile(function cb(valuesFile) {
+    getSensorsFromFile((valuesFile) => {
       if (valuesFile) {
         sendSensors(socket, valuesFile);
       }
@@ -89,10 +91,10 @@ function sendSensors(socket, values) {
 }
 
 function sensorSender() {
-  setTimeout(function funcTimeout() {
+  setTimeout(() => {
     if (settings.enabled) {
-      getSensors(function cbGetSensors(sensorsValues) {
-        connection.getSocket(function cdGetSocket(err, socket) {
+      getSensors((sensorsValues) => {
+        connection.getSocket((err, socket) => {
           if (err) { throw err; }
           sendSensors(socket, sensorsValues);
           sensorSender();

@@ -1,15 +1,15 @@
-var system = require('./system');
-var options = require('./camOptions');
-var dateformat = require('dateformat');
-var path = require('path');
-var Camera = require('camerapi');
-var cam = new Camera();
+'use strict';
 
-var settings = {};
+const db = require('./db');
+const options = require('./camOptions');
+const dateformat = require('dateformat');
+const path = require('path');
+const Camera = require('camerapi');
+const cam = new Camera();
 
 cam.baseFolder(path.resolve(options.filesDir));
 
-function takeVideo(callback) {
+function takeVideo(settings, callback) {
   cam
     .nopreview()
     .width(settings.width)
@@ -18,69 +18,57 @@ function takeVideo(callback) {
     // .bitrate(settings.bitrate)//bits/s//1080p30 15Mbits/s or more
     .timeout(settings.time)
     .recordVideo(
-      dateformat(new Date(), 'yyyy-mm-dd\'T\'HH:MM:ss') + '.h264',
-      function cbTakeVideo() {
+      `${dateformat(new Date(), 'yyyy-mm-dd\'T\'HH:MM:ss')} .h264`,
+      () => {
         callback();
       }
     );
 }
 
 function videoShooter() {
-  setTimeout(function cb() {
-    if (settings.enabled) {
-      takeVideo(function cbTakeVideo() {
+  db.loadCamSettings('videoCamSettings', (errLoad, settings) => {
+    if (errLoad) { throw errLoad; }
+    setTimeout(() => {
+      if (settings.enabled) {
+        takeVideo(() => {
+          videoShooter();
+        });
+      } else {
         videoShooter();
-      });
-    } else {
-      videoShooter();
-    }
-  }, settings.interval);
-}
-
-function saveSettings() {
-  system.saveCamSettings('video', settings);
+      }
+    }, settings.interval);
+  });
 }
 
 module.exports.init = function videoShooterInit() {
-  system.loadCamSettings('video', function cbLoad(err, loadedSettings) {
-    if (err) { throw err; }
-    settings = loadedSettings;
-    videoShooter();
-  });
+  videoShooter();
 };
 
 module.exports.on = function videoOn() {
-  settings.enabled = true;
-  saveSettings();
+  db.saveCamSettings('videoCamSettings', 'enabled', 'true');
 };
 
 module.exports.off = function videoOff() {
-  settings.enabled = false;
-  saveSettings();
+  db.saveCamSettings('videoCamSettings', 'enabled', 'false');
 };
 
 module.exports.setResolution = function setResolution(width, height) {
-  settings.width = width;
-  settings.height = height;
-  saveSettings();
+  db.saveCamSettings('videoCamSettings', 'width', width);
+  db.saveCamSettings('videoCamSettings', 'height', height);
 };
 
 module.exports.setFramerate = function setFramerate(fps) {
-  settings.framerate = fps;
-  saveSettings();
+  db.saveCamSettings('videoCamSettings', 'framerate', fps);
 };
 
 module.exports.setBitrate = function setBitrate(bitrate) {
-  settings.bitrate = bitrate;
-  saveSettings();
+  db.saveCamSettings('videoCamSettings', 'bitrate', bitrate);
 };
 
 module.exports.setTime = function setTime(time) {
-  settings.time = time;
-  saveSettings();
+  db.saveCamSettings('videoCamSettings', 'time', time);
 };
 
 module.exports.setInterval = function setInterval(interval) {
-  settings.interval = interval;
-  saveSettings();
+  db.saveCamSettings('videoCamSettings', 'interval', interval);
 };

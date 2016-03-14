@@ -1,14 +1,16 @@
-var system = require('./system');
-var options = require('./camOptions');
-var statisticsSender = require('./statisticsSender');
-var fileSender = require('./fileSender');
-var connection = require('./connection');
-var photoShooter = require('./photoShooter');
-var videoShooter = require('./videoShooter');
-var sensorSender = require('./sensorSender');
-var brain = require('./brain');
+'use strict';
 
-system.init();
+const options = require('./camOptions');
+const db = require('./db');
+const statisticsSender = require('./statisticsSender');
+const fileSender = require('./fileSender');
+const connection = require('./connection');
+const photoShooter = require('./photoShooter');
+const videoShooter = require('./videoShooter');
+const sensorSender = require('./sensorSender');
+const brain = require('./brain');
+
+db.init();
 statisticsSender.init(
   options.statisticsSenderInterval,
   options.systemStatInterval,
