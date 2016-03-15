@@ -24,7 +24,7 @@ function takePhoto(settings, callback) {
 }
 
 function photoShooter() {
-  db.loadCamSettings('photoCamSettings', (errLoad, settings) => {
+  db.loadSettings('photoCamSettings', (errLoad, settings) => {
     if (errLoad) { throw errLoad; }
     setTimeout(() => {
       if (settings.enabled) {
@@ -43,26 +43,26 @@ module.exports.init = function photoShooterInit() {
 };
 
 module.exports.on = function photoOn() {
-  db.saveCamSettings('photoCamSettings', 'enabled', 'true');
+  db.saveSettings('photoCamSettings', 'enabled', 'true');
 };
 
 module.exports.off = function photoOff() {
-  db.saveCamSettings('photoCamSettings', 'enabled', 'false');
+  db.saveSettings('photoCamSettings', 'enabled', 'false');
 };
 
 module.exports.setTimeout = function setTimeout(timeout) {
-  db.saveCamSettings('photoCamSettings', 'timeout', timeout);
+  db.saveSettings('photoCamSettings', 'timeout', timeout);
 };
 
 module.exports.setResolution = function setResolution(width, height) {
-  db.saveCamSettings('photoCamSettings', 'width', width);
-  db.saveCamSettings('photoCamSettings', 'height', height);
+  db.saveSettings('photoCamSettings', 'width', width);
+  db.saveSettings('photoCamSettings', 'height', height);
 };
 
 module.exports.setQuality = function setQuality(quality) {
-  db.saveCamSettings('photoCamSettings', 'quality', quality);
+  db.saveSettings('photoCamSettings', 'quality', quality);
 };
 
 module.exports.setInterval = function setInterval(interval) {
-  db.saveCamSettings('photoCamSettings', 'interval', interval);
+  db.saveSettings('photoCamSettings', 'interval', interval);
 };

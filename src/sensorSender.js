@@ -1,5 +1,6 @@
 'use strict';
 
+const db = require('./db');
 const options = require('./camOptions');
 const connection = require('./connection');
 const exec = require('child_process');
@@ -9,11 +10,6 @@ const path = require('path');
 const async = require('async');
 const log = require('./log');
 const os = require('os');
-
-const settings = {
-  enabled: options.sensorsEnabled,
-  interval: options.sensorsInterval,
-};
 
 function getSensors(callback) {
   const sensorsValues = {
@@ -91,19 +87,22 @@ function sendSensors(socket, values) {
 }
 
 function sensorSender() {
-  setTimeout(() => {
-    if (settings.enabled) {
-      getSensors((sensorsValues) => {
-        connection.getSocket((err, socket) => {
-          if (err) { throw err; }
-          sendSensors(socket, sensorsValues);
-          sensorSender();
+  db.loadSettings('sensorsSettings', (errLoad, settings) => {
+    if (errLoad) { throw errLoad; }
+    setTimeout(() => {
+      if (settings.enabled) {
+        getSensors((sensorsValues) => {
+          connection.getSocket((err, socket) => {
+            if (err) { throw err; }
+            sendSensors(socket, sensorsValues);
+            sensorSender();
+          });
         });
-      });
-    } else {
-      sensorSender();
-    }
-  }, settings.interval);
+      } else {
+        sensorSender();
+      }
+    }, settings.interval);
+  });
 }
 
 module.exports.init = function sensorSenderInit() {
@@ -111,13 +110,13 @@ module.exports.init = function sensorSenderInit() {
 };
 
 module.exports.on = function sensorsOn() {
-  settings.enabled = true;
+  db.saveSettings('sensorsSettings', 'enabled', 'true');
 };
 
 module.exports.off = function sensorsOff() {
-  settings.enabled = false;
+  db.saveSettings('sensorsSettings', 'enabled', 'false');
 };
 
 module.exports.setInterval = function setInterval(interval) {
-  settings.interval = interval;
+  db.saveSettings('sensorsSettings', 'interval', interval);
 };

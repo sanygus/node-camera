@@ -6,10 +6,11 @@ module.exports = {
   serverFilesEvent: 'file',
   sensorsFile: '/tmp/sensors',
   filesDir: '/tmp/cam',
-  sensorsEnabled: true,
-  sensorsInterval: 7000,
-  fileSenderInterval: 2000,
   defaultSettings: {
+    fileSenderSettings: {
+      enabled: true,
+      interval: 2000,
+    },
     photoCamSettings: {
       enabled: false,
       width: 2592, // px
@@ -27,10 +28,18 @@ module.exports = {
       time: 5000, // ms
       interval: 5000, // ms
     },
+    sensorsSettings: {
+      enabled: true,
+      interval: 7000,
+    },
+    statisticsSettings: {
+      senderEnabled: true,
+      senderInterval: 2000,
+      getSystemStatEnabled: true,
+      getSystemStatInterval: 10000,
+    },
   },
   logFile: './camera.log',
-  statisticsSenderInterval: 2000,
-  systemStatInterval: 10000,
   brainInterval: 5000,
   RPiHostname: 'raspberry',
   dbFile: '/tmp/camdb',

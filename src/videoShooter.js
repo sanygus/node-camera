@@ -26,7 +26,7 @@ function takeVideo(settings, callback) {
 }
 
 function videoShooter() {
-  db.loadCamSettings('videoCamSettings', (errLoad, settings) => {
+  db.loadSettings('videoCamSettings', (errLoad, settings) => {
     if (errLoad) { throw errLoad; }
     setTimeout(() => {
       if (settings.enabled) {
@@ -45,30 +45,30 @@ module.exports.init = function videoShooterInit() {
 };
 
 module.exports.on = function videoOn() {
-  db.saveCamSettings('videoCamSettings', 'enabled', 'true');
+  db.saveSettings('videoCamSettings', 'enabled', 'true');
 };
 
 module.exports.off = function videoOff() {
-  db.saveCamSettings('videoCamSettings', 'enabled', 'false');
+  db.saveSettings('videoCamSettings', 'enabled', 'false');
 };
 
 module.exports.setResolution = function setResolution(width, height) {
-  db.saveCamSettings('videoCamSettings', 'width', width);
-  db.saveCamSettings('videoCamSettings', 'height', height);
+  db.saveSettings('videoCamSettings', 'width', width);
+  db.saveSettings('videoCamSettings', 'height', height);
 };
 
 module.exports.setFramerate = function setFramerate(fps) {
-  db.saveCamSettings('videoCamSettings', 'framerate', fps);
+  db.saveSettings('videoCamSettings', 'framerate', fps);
 };
 
 module.exports.setBitrate = function setBitrate(bitrate) {
-  db.saveCamSettings('videoCamSettings', 'bitrate', bitrate);
+  db.saveSettings('videoCamSettings', 'bitrate', bitrate);
 };
 
 module.exports.setTime = function setTime(time) {
-  db.saveCamSettings('videoCamSettings', 'time', time);
+  db.saveSettings('videoCamSettings', 'time', time);
 };
 
 module.exports.setInterval = function setInterval(interval) {
-  db.saveCamSettings('videoCamSettings', 'interval', interval);
+  db.saveSettings('videoCamSettings', 'interval', interval);
 };

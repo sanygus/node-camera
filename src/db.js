@@ -11,7 +11,7 @@ module.exports.init = function dbInit() {
   db.persistence.setAutocompactionInterval(options.systemDBCompactionInterval);
 };
 
-module.exports.loadCamSettings = function loadCamSettings(type, callback) {
+module.exports.loadSettings = function loadCamSettings(type, callback) {
   db.findOne({ type }, { settings: 1, _id: 0 }, (errFind, doc) => {
     if (errFind) { throw errFind; }
     if (doc) {
@@ -25,7 +25,7 @@ module.exports.loadCamSettings = function loadCamSettings(type, callback) {
   });
 };
 
-module.exports.saveCamSettings = function saveCamSettings(type, option, value, callback) {
+module.exports.saveSettings = function saveSettings(type, option, value, callback) {
   // const field = `settings.${option}`;
   db.update(
     { type },

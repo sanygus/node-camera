@@ -11,13 +11,8 @@ const sensorSender = require('./sensorSender');
 const brain = require('./brain');
 
 db.init();
-statisticsSender.init(
-  options.statisticsSenderInterval,
-  options.systemStatInterval,
-  options.dbFile,
-  options.dbCompactionInterval
-);
-fileSender(options.filesDir, options.fileSenderInterval);
+statisticsSender.init(options.dbFile, options.dbCompactionInterval);
+fileSender.init(options.filesDir);
 connection.init(options.serverAddress);
 photoShooter.init();
 videoShooter.init();

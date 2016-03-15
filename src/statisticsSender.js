@@ -8,8 +8,9 @@ const log = require('./log');
 const DataStore = require('nedb');
 const os = require('os');
 const diskspace = require('diskspace');
+const db = require('./db');
 
-let db;
+let dbStat;
 
 function takeStat(object) {
   const newObject = {
@@ -23,7 +24,7 @@ function takeStat(object) {
         newObject[key] = object[key];
       }
     }
-    db.insert(newObject, (err/* , newDoc*/) => {
+    dbStat.insert(newObject, (err/* , newDoc*/) => {
       if (err) { throw err; }
       log(newObject);
     });
@@ -32,90 +33,116 @@ function takeStat(object) {
   }
 }
 
-function getSystemStat(interval) {
-  async.parallel([
-    function getUptime(callbackAsync) {
-      callbackAsync(null, os.uptime());
-    },
-    function getDiskSpace(callbackAsync) {
-      let drive;
-      switch (os.type()) {
-        case 'Linux':
-          drive = '/tmp';
-          break;
-        case 'Windows_NT':
-          drive = 'C';
-          break;
-        default:
-          drive = '';
-          break;
-      }
-      diskspace.check(drive, (err, total, free, status) => {
+function getSystemStat() {
+  db.loadSettings('statisticsSettings', (errLoad, settings) => {
+    if (settings.getSystemStatEnabled) {
+      async.parallel([
+        function getUptime(callbackAsync) {
+          callbackAsync(null, os.uptime());
+        },
+        function getDiskSpace(callbackAsync) {
+          let drive;
+          switch (os.type()) {
+            case 'Linux':
+              drive = '/tmp';
+              break;
+            case 'Windows_NT':
+              drive = 'C';
+              break;
+            default:
+              drive = '';
+              break;
+          }
+          diskspace.check(drive, (err, total, free, status) => {
+            if (err) { throw err; }
+            if (status !== 'READY') {
+              throw new Error('disk error');
+            }
+            callbackAsync(null, free);
+          });
+        },
+      ], (err, results) => {
         if (err) { throw err; }
-        if (status !== 'READY') {
-          throw new Error('disk error');
-        }
-        callbackAsync(null, free);
+        takeStat({
+          uptime: results[0],
+          disk: results[1],
+        });
+        setTimeout(getSystemStat, settings.getSystemStatInterval);
       });
-    },
-  ], (err, results) => {
-    if (err) { throw err; }
-    takeStat({
-      uptime: results[0],
-      disk: results[1],
-    });
-    setTimeout(() => {
-      getSystemStat(interval);
-    }, interval);
+    } else {
+      setTimeout(getSystemStat, settings.getSystemStatInterval);
+    }
   });
 }
 
-function statisticsSender(interval) {
-  function runAgain() {
-    statisticsSender(interval);
-  }
-
-  connection.getSocket((err, socket) => {
-    if (err) { throw err; }
-    if (socket.connected) {
-      db.findOne({ sent: false }).sort({ date: -1 }).exec((errFind, doc) => {
-        if (errFind) { throw errFind; }
-        if (doc) {
-          socket.emit('statistics', doc, () => {
-            db.update({ _id: doc._id }, { $set: { sent: true } }, {}, (errUpdate) => {
-              if (errUpdate) { throw errUpdate; }
-              runAgain();
-            });
+function statisticsSender() {
+  db.loadSettings('statisticsSettings', (errLoad, settings) => {
+    if (errLoad) { throw errLoad; }
+    if (settings.enabled) {
+      connection.getSocket((err, socket) => {
+        if (err) { throw err; }
+        if (socket.connected) {
+          dbStat.findOne({ sent: false }).sort({ date: -1 }).exec((errFind, doc) => {
+            if (errFind) { throw errFind; }
+            if (doc) {
+              socket.emit('statistics', doc, () => {
+                dbStat.update({ _id: doc._id }, { $set: { sent: true } }, {}, (errUpdate) => {
+                  if (errUpdate) { throw errUpdate; }
+                  setImmediate(statisticsSender);
+                });
+              });
+            } else {
+              setTimeout(statisticsSender, settings.senderInterval);
+            }
           });
         } else {
-          setTimeout(runAgain, interval);
+          setTimeout(statisticsSender, settings.senderInterval);
         }
       });
     } else {
-      setTimeout(runAgain, interval);
+      setTimeout(statisticsSender, settings.senderInterval);
     }
   });
 }
 
 function getStatistics(callback) {
-  db.find({}).sort({ date: -1 }).exec((err, docs) => {
+  dbStat.find({}).sort({ date: -1 }).exec((err, docs) => {
     if (err) { throw err; }
     callback(null, docs);
   });
 }
 
-module.exports.init = function statisticsSenderInit(
-  interval,
-  systemStatInterval,
-  dbFile,
-  dbCompactionInterval
-) {
-  statisticsSender(interval);
-  getSystemStat(systemStatInterval);
-  db = new DataStore({ filename: path.resolve(dbFile), autoload: true });
-  db.persistence.setAutocompactionInterval(dbCompactionInterval);
+module.exports.init = function statisticsSenderInit(dbFile, dbCompactionInterval) {
+  statisticsSender();
+  getSystemStat();
+  dbStat = new DataStore({ filename: path.resolve(dbFile), autoload: true });
+  dbStat.persistence.setAutocompactionInterval(dbCompactionInterval);
 };
 
 module.exports.takeStat = takeStat;
 
 module.exports.getStatistics = getStatistics;
+
+module.exports.statisticsSender.on = function statisticsSenderOn() {
+  db.saveSettings('statisticsSettings', 'senderEnabled', 'true');
+};
+
+module.exports.statisticsSender.off = function statisticsSenderOff() {
+  db.saveSettings('statisticsSettings', 'senderEnabled', 'false');
+};
+
+module.exports.statisticsSender.setInterval = function statisticsSenderSetInterval(interval) {
+  db.saveSettings('statisticsSettings', 'senderInterval', interval);
+};
+
+module.exports.sysStatCollector.on = function sysStatCollectorOn() {
+  db.saveSettings('statisticsSettings', 'getSystemStatEnabled', 'true');
+};
+
+module.exports.sysStatCollector.off = function sysStatCollectorOff() {
+  db.saveSettings('statisticsSettings', 'getSystemStatEnabled', 'false');
+};
+
+module.exports.sysStatCollector.setInterval = function sysStatCollectorSetInterval(interval) {
+  db.saveSettings('statisticsSettings', 'getSystemStatInterval', interval);
+};

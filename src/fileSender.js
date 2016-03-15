@@ -1,5 +1,6 @@
 'use strict';
 
+const db = require('./db');
 const fs = require('fs');
 const path = require('path');
 const statisticsSender = require('./statisticsSender');
@@ -75,21 +76,39 @@ function trySendNewestFile(dirPath, callback) {
   });
 }
 
-function fileSender(dirPath, interval) {
+function fileSender(dirPath) {
   function runAgain() {
-    fileSender(dirPath, interval);
+    fileSender(dirPath);
   }
-
-  trySendNewestFile(dirPath, (err, sent) => {
-    if (err) { throw err; }
-    if (sent) {
-      setImmediate(runAgain);
+  db.loadSettings('fileSenderSettings', (errLoad, settings) => {
+    if (errLoad) { throw errLoad; }
+    if (settings.enabled) {
+      trySendNewestFile(dirPath, (err, sent) => {
+        if (err) { throw err; }
+        if (sent) {
+          setImmediate(runAgain);
+        } else {
+          setTimeout(runAgain, settings.interval);
+        }
+      });
     } else {
-      setTimeout(runAgain, interval);
+      setTimeout(runAgain, settings.interval);
     }
   });
 }
 
-module.exports = function startFileSender(dirPath, interval) {
-  fileSender(dirPath, interval);
+module.exports.init = function startFileSender(dirPath) {
+  fileSender(dirPath);
+};
+
+module.exports.on = function fileSenderOn() {
+  db.saveSettings('fileSenderSettings', 'enabled', 'true');
+};
+
+module.exports.off = function fileSenderOff() {
+  db.saveSettings('fileSenderSettings', 'enabled', 'false');
+};
+
+module.exports.setInterval = function fileSenderSetInterval(interval) {
+  db.saveSettings('fileSenderSettings', 'interval', interval);
 };
