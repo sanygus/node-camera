@@ -123,26 +123,26 @@ module.exports.takeStat = takeStat;
 
 module.exports.getStatistics = getStatistics;
 
-module.exports.statisticsSender.on = function statisticsSenderOn() {
+module.exports.statisticsSenderOn = function statisticsSenderOn() {
   db.saveSettings('statisticsSettings', 'senderEnabled', 'true');
 };
 
-module.exports.statisticsSender.off = function statisticsSenderOff() {
+module.exports.statisticsSenderOff = function statisticsSenderOff() {
   db.saveSettings('statisticsSettings', 'senderEnabled', 'false');
 };
 
-module.exports.statisticsSender.setInterval = function statisticsSenderSetInterval(interval) {
+module.exports.statisticsSenderSetInterval = function statisticsSenderSetInterval(interval) {
   db.saveSettings('statisticsSettings', 'senderInterval', interval);
 };
 
-module.exports.sysStatCollector.on = function sysStatCollectorOn() {
+module.exports.sysStatCollectorOn = function sysStatCollectorOn() {
   db.saveSettings('statisticsSettings', 'getSystemStatEnabled', 'true');
 };
 
-module.exports.sysStatCollector.off = function sysStatCollectorOff() {
+module.exports.sysStatCollectorOff = function sysStatCollectorOff() {
   db.saveSettings('statisticsSettings', 'getSystemStatEnabled', 'false');
 };
 
-module.exports.sysStatCollector.setInterval = function sysStatCollectorSetInterval(interval) {
+module.exports.sysStatCollectorSetInterval = function sysStatCollectorSetInterval(interval) {
   db.saveSettings('statisticsSettings', 'getSystemStatInterval', interval);
 };

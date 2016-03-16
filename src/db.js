@@ -26,10 +26,9 @@ module.exports.loadSettings = function loadCamSettings(type, callback) {
 };
 
 module.exports.saveSettings = function saveSettings(type, option, value, callback) {
-  // const field = `settings.${option}`;
   db.update(
     { type },
-    { $set: { field: value } }, // field
+    { $set: { [`settings.${option}`]: value } }, // field
     { upsert: true },
     (errUpdate) => {
       if (errUpdate) { throw errUpdate; }
