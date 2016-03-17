@@ -2,7 +2,8 @@
 
 const options = require('./camOptions');
 const statisticsSender = require('./statisticsSender');
-/* const fileSender = require('./fileSender');
+/* const systemStat = require('./systemStat');
+const fileSender = require('./fileSender');
 const connection = require('./connection');
 const photoShooter = require('./photoShooter');
 const videoShooter = require('./videoShooter');

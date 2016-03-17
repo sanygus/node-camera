@@ -45,11 +45,11 @@ module.exports.init = function videoShooterInit() {
 };
 
 module.exports.on = function videoOn() {
-  db.saveSettings('videoCamSettings', 'enabled', 'true');
+  db.saveSettings('videoCamSettings', 'enabled', true);
 };
 
 module.exports.off = function videoOff() {
-  db.saveSettings('videoCamSettings', 'enabled', 'false');
+  db.saveSettings('videoCamSettings', 'enabled', false);
 };
 
 module.exports.setResolution = function setResolution(width, height) {

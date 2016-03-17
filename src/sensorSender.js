@@ -110,11 +110,11 @@ module.exports.init = function sensorSenderInit() {
 };
 
 module.exports.on = function sensorsOn() {
-  db.saveSettings('sensorsSettings', 'enabled', 'true');
+  db.saveSettings('sensorsSettings', 'enabled', true);
 };
 
 module.exports.off = function sensorsOff() {
-  db.saveSettings('sensorsSettings', 'enabled', 'false');
+  db.saveSettings('sensorsSettings', 'enabled', false);
 };
 
 module.exports.setInterval = function setInterval(interval) {

@@ -53,11 +53,11 @@ module.exports.init = function systemStatInit() {
 };
 
 module.exports.on = function systemStatOn() {
-  db.saveSettings('systemStatSettings', 'enabled', 'true');
+  db.saveSettings('systemStatSettings', 'enabled', true);
 };
 
 module.exports.off = function systemStatOff() {
-  db.saveSettings('systemStatSettings', 'enabled', 'false');
+  db.saveSettings('systemStatSettings', 'enabled', false);
 };
 
 module.exports.setInterval = function systemStatSetInterval(interval) {

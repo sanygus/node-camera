@@ -43,11 +43,11 @@ module.exports.init = function photoShooterInit() {
 };
 
 module.exports.on = function photoOn() {
-  db.saveSettings('photoCamSettings', 'enabled', 'true');
+  db.saveSettings('photoCamSettings', 'enabled', true);
 };
 
 module.exports.off = function photoOff() {
-  db.saveSettings('photoCamSettings', 'enabled', 'false');
+  db.saveSettings('photoCamSettings', 'enabled', false);
 };
 
 module.exports.setTimeout = function setTimeout(timeout) {

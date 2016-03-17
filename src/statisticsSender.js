@@ -78,11 +78,11 @@ module.exports.takeStat = takeStat;
 module.exports.getStatistics = getStatistics;
 
 module.exports.on = function statisticsSenderOn() {
-  db.saveSettings('statisticsSenderSettings', 'enabled', 'true');
+  db.saveSettings('statisticsSenderSettings', 'enabled', true);
 };
 
 module.exports.off = function statisticsSenderOff() {
-  db.saveSettings('statisticsSenderSettings', 'enabled', 'false');
+  db.saveSettings('statisticsSenderSettings', 'enabled', false);
 };
 
 module.exports.setInterval = function statisticsSenderSetInterval(interval) {

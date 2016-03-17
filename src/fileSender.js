@@ -102,11 +102,11 @@ module.exports.init = function startFileSender(dirPath) {
 };
 
 module.exports.on = function fileSenderOn() {
-  db.saveSettings('fileSenderSettings', 'enabled', 'true');
+  db.saveSettings('fileSenderSettings', 'enabled', true);
 };
 
 module.exports.off = function fileSenderOff() {
-  db.saveSettings('fileSenderSettings', 'enabled', 'false');
+  db.saveSettings('fileSenderSettings', 'enabled', false);
 };
 
 module.exports.setInterval = function fileSenderSetInterval(interval) {
