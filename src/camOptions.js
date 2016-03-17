@@ -32,18 +32,20 @@ module.exports = {
       enabled: true,
       interval: 7000,
     },
-    statisticsSettings: {
-      senderEnabled: true,
-      senderInterval: 2000,
-      getSystemStatEnabled: true,
-      getSystemStatInterval: 10000,
+    statisticsSenderSettings: {
+      enabled: true,
+      interval: 2000,
+    },
+    systemStatSettings: {
+      enabled: true,
+      interval: 10000,
     },
   },
   logFile: './camera.log',
   brainInterval: 5000,
   RPiHostname: 'raspberry',
-  dbFile: '/tmp/camdb',
+  dbFile: '/tmp/camdb', // stat
   dbCompactionInterval: 60000,
-  systemDbFile: '/tmp/camsystemdb',
+  systemDbFile: '/tmp/camsystemdb', // settings
   systemDBCompactionInterval: 120000,
 };

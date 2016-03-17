@@ -6,11 +6,6 @@ const path = require('path');
 
 let db;
 
-module.exports.init = function dbInit() {
-  db = new DataStore({ filename: path.resolve(options.systemDbFile), autoload: true });
-  db.persistence.setAutocompactionInterval(options.systemDBCompactionInterval);
-};
-
 module.exports.loadSettings = function loadCamSettings(type, callback) {
   db.findOne({ type }, { settings: 1, _id: 0 }, (errFind, doc) => {
     if (errFind) { throw errFind; }
@@ -35,4 +30,9 @@ module.exports.saveSettings = function saveSettings(type, option, value, callbac
       if (callback) { callback(null); }
     }
   );
+};
+
+module.exports.init = function dbInit() {
+  db = new DataStore({ filename: path.resolve(options.systemDbFile), autoload: true });
+  db.persistence.setAutocompactionInterval(options.systemDBCompactionInterval);
 };
