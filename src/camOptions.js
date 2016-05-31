@@ -30,20 +30,20 @@ module.exports = {
     },
     sensorsSettings: {
       enabled: true,
-      interval: 7000,
+      interval: 4000,
     },
     statisticsSenderSettings: {
-      enabled: true,
+      enabled: false,
       interval: 2000,
     },
     systemStatSettings: {
-      enabled: true,
+      enabled: false,
       interval: 10000,
     },
   },
   logFile: './camera.log',
   brainInterval: 5000,
-  RPiHostname: 'raspberry',
+  RPiHostname: 'raspberrypi',
   dbFile: '/tmp/camdb', // stat
   dbCompactionInterval: 60000,
   systemDbFile: '/tmp/camsystemdb', // settings

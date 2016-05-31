@@ -11,11 +11,20 @@ const async = require('async');
 const log = require('./log');
 const os = require('os');
 
+const photoShooter = require('./photoShooter');
+const videoShooter = require('./videoShooter');
+
 function getSensors(callback) {
   const sensorsValues = {
     date: dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
     cputemp: null,
-    pingtime: null,
+    voltage: null,
+    capacity: null,
+    amperage: null,
+    power: null,
+    ostP: null,
+    ostV: null,
+    ostS: null,
   };
   /* test values */
   async.parallel([
@@ -29,10 +38,11 @@ function getSensors(callback) {
           callbackAsync(null, temperature);
         });
       } else {
+        temperature = Math.round(Math.random() * 10); // test values
         callbackAsync(null, temperature);
       }
     },
-    function getPingTime(callbackAsync) {
+    /*function getPingTime(callbackAsync) {
       let pingTime = null;
       if (os.type() === 'Linux') {
         exec.exec('ping -c 1 -w 1 8.8.8.8;exit 0', (err, stdout, stderr) => {
@@ -45,11 +55,32 @@ function getSensors(callback) {
       } else {
         callbackAsync(null, pingTime);
       }
+    },*/
+    (callbackAsync) => {
+      fs.readFile(path.resolve("/tmp/voltage"), 'utf8', (err, data) => {
+        if (data !== '') {
+          callbackAsync(null, data.replace('\n', ''))
+        }
+      });
+    },
+    (callbackAsync) => {
+      fs.readFile(path.resolve("/tmp/amperage"), 'utf8', (err, data) => {
+        if (data !== '') {
+          callbackAsync(null, data.replace('\n', ''))
+        }
+      });
     },
   ], (err, results) => {
     if (err) { throw err; }
-    sensorsValues.cputemp = results[0];
-    sensorsValues.pingtime = results[1];
+    sensorsValues.cputemp = results[0];//'C
+    sensorsValues.voltage = (results[1] * 2.9).toFixed(3);//В
+    sensorsValues.capacity = ((sensorsValues.voltage - 9.5) * 0.2 * 40).toFixed(3);//Ач
+    if (sensorsValues.capacity < 0) { sensorsValues.capacity = 0; }
+    sensorsValues.amperage = results[2];//А
+    sensorsValues.power = (sensorsValues.voltage * sensorsValues.amperage).toFixed(3);//Вт
+    sensorsValues.ostP = (sensorsValues.capacity / 0.375) * 60 * 60;//сек
+    sensorsValues.ostV = (sensorsValues.capacity / 0.5) * 60 * 60;//сек
+    sensorsValues.ostS = (sensorsValues.capacity / 0.01) * 60 * 60;//сек
     callback(sensorsValues);
   });
 }
@@ -74,7 +105,21 @@ function getSensorsFromFile(callback) {
 function sendSensors(socket, values) {
   if (socket.connected) {
     log(values);
-    socket.emit(options.serverSensorsEvent, values);
+    socket.emit(options.serverSensorsEvent, values, (settings) => {
+      if (settings === 'photo') {
+        photoShooter.on();
+        videoShooter.off();
+        fs.writeFile(path.resolve('/tmp/sleepSec'), '0');
+      } else if (settings === 'video') {
+        photoShooter.off();
+        videoShooter.on();
+        fs.writeFile(path.resolve('/tmp/sleepSec'), '0');
+      } else if (settings.indexOf('sleep') === 0) {
+        photoShooter.off();
+        videoShooter.off();
+        fs.writeFile(path.resolve('/tmp/sleepSec'), settings.substring(6));
+      }
+    });
 
     getSensorsFromFile((valuesFile) => {
       if (valuesFile) {

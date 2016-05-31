@@ -30,6 +30,7 @@ function photoShooter() {
       if (settings.enabled) {
         takePhoto(settings, () => {
           photoShooter();
+          console.log('photo take!');
         });
       } else {
         photoShooter();

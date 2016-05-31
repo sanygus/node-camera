@@ -30,8 +30,9 @@ function videoShooter() {
     if (errLoad) { throw errLoad; }
     setTimeout(() => {
       if (settings.enabled) {
-        takeVideo(() => {
+        takeVideo(settings, () => {
           videoShooter();
+          console.log('video take!');
         });
       } else {
         videoShooter();
