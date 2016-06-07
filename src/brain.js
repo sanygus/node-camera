@@ -1,14 +1,36 @@
-'use strict';
-
 const options = require('./camOptions');
 const statisticsSender = require('./statisticsSender');
+const fs = require('fs');
+const path = require('path');
 /* const systemStat = require('./systemStat');
 const fileSender = require('./fileSender');
-const connection = require('./connection');
+const connection = require('./connection');*/
 const photoShooter = require('./photoShooter');
 const videoShooter = require('./videoShooter');
-const sensorSender = require('./sensorSender'); */
+//const sensorSender = require('./sensorSender');
 const log = require('./log');
+
+let currentMode = [];
+let actions = [];
+let timer;
+
+function cloneMode(inputArray) {
+  let outArray = [];
+  inputArray.forEach((mode) => {
+    outArray.push({ type: mode.type, duration: mode.duration });
+  });
+  return outArray;
+}
+
+module.exports.modeReceiver = function modeReceiver(mode) {
+  if (JSON.stringify(mode) !== JSON.stringify(currentMode)) {
+    photoShooter.off();
+    videoShooter.off();
+    currentMode = cloneMode(mode);
+    actions = cloneMode(mode);
+    console.log('new mode!');
+  }
+}
 
 function getData(callback) {
   statisticsSender.getStatistics((err, docs) => {
@@ -17,26 +39,76 @@ function getData(callback) {
   });
 }
 
-function decide(data, callback) {
-  /* if (data[0].uptime <= 32132) {
-    photoShooter.setQuality(50);
-    videoShooter.setFramerate(5);
-  }
-  sensorSender.setInterval(1000);
-  sensorSender.off(); */
+function decide(/*data, */callback) {
+  if (actions.length > 0) {
+    switch (actions[0].type) {
+      case 'photo':
+        if (actions[0].duration > 0) {
+          photoShooter.on(); 
+          actions[0].duration -= 1;
+        } else {
+          photoShooter.off();
+          actions = actions.slice(1);
+        }
+        break;
+      case 'video': 
+        if (actions[0].duration > 0) {
+          videoShooter.on(); 
+          actions[0].duration -= 1;
+        } else {
+          videoShooter.off();
+          actions = actions.slice(1);
+        }
+        break;
+      case 'sleep':
+        if (actions[0].duration > 0) {
+          fs.writeFile(path.resolve('./currentMode'), JSON.stringify(currentMode));
+          fs.writeFile(path.resolve('./doAfterSleep'), JSON.stringify(actions.slice(1)));
+          fs.writeFile(path.resolve('/tmp/sleepSec'), actions[0].duration);
+        } else {
+          actions = actions.slice(1);
+        }
+        break;
+      default:
+        if (actions[0].duration > 0) {
+          actions[0].duration -= 1;
+        } else {
+          actions = actions.slice(1);
+        }
+    }
+  } else { if (currentMode.length > 0) {actions = cloneMode(currentMode);} }
+  console.log(actions);
   callback();
 }
 
 function brain() {
-  getData((err, data) => {
-    if (err) { throw err; }
-    decide(data, () => {
-      setTimeout(brain, options.brainInterval);
-    });
+  //getData((err, data) => {
+    //if (err) { throw err; }
+  decide(/*data, */() => {
+    setTimeout(brain, options.brainInterval);
   });
+  //});
   log('brain tick');
 }
 
-module.exports = function brainInit() {
+module.exports.init = function brainInit() {
   brain();
+  fs.stat(path.resolve('./currentMode'), (err) => {
+    if(!err) {
+      fs.readFile(path.resolve('./currentMode'), (err, data) => {
+        fs.unlink(path.resolve('./currentMode'), () => {
+          currentMode = JSON.parse(data);
+        });
+      });
+    }
+  })
+  fs.stat(path.resolve('./doAfterSleep'), (err) => {
+    if(!err) {
+      fs.readFile(path.resolve('./doAfterSleep'), (err, data) => {
+        fs.unlink(path.resolve('./doAfterSleep'), () => {
+          actions = JSON.parse(data);
+        });
+      });
+    }
+  })
 };

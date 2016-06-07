@@ -19,4 +19,4 @@ connection.init(options.serverAddress);
 photoShooter.init();
 videoShooter.init();
 sensorSender.init();
-brain();
+brain.init();

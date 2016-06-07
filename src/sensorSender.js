@@ -11,8 +11,7 @@ const async = require('async');
 const log = require('./log');
 const os = require('os');
 
-const photoShooter = require('./photoShooter');
-const videoShooter = require('./videoShooter');
+const brain = require('./brain');
 
 function getSensors(callback) {
   const sensorsValues = {
@@ -76,11 +75,12 @@ function getSensors(callback) {
     sensorsValues.voltage = (results[1] * 2.9).toFixed(3);//В
     sensorsValues.capacity = ((sensorsValues.voltage - 9.5) * 0.2 * 40).toFixed(3);//Ач
     if (sensorsValues.capacity < 0) { sensorsValues.capacity = 0; }
-    sensorsValues.amperage = results[2];//А
+    sensorsValues.amperage = (results[2] * 1).toFixed(3);//А
     sensorsValues.power = (sensorsValues.voltage * sensorsValues.amperage).toFixed(3);//Вт
-    sensorsValues.ostP = (sensorsValues.capacity / 0.375) * 60 * 60;//сек
-    sensorsValues.ostV = (sensorsValues.capacity / 0.5) * 60 * 60;//сек
-    sensorsValues.ostS = (sensorsValues.capacity / 0.01) * 60 * 60;//сек
+    sensorsValues.ostP = ((sensorsValues.capacity / 0.375) * 60 * 60).toFixed(1);//сек
+    sensorsValues.ostV = ((sensorsValues.capacity / 0.5) * 60 * 60).toFixed(1);//сек
+    sensorsValues.ostS = ((sensorsValues.capacity / 0.01) * 60 * 60).toFixed(1);//сек
+    sensorsValues.ostC = ((sensorsValues.capacity / sensorsValues.amperage) * 60 * 60).toFixed(1);//сек
     callback(sensorsValues);
   });
 }
@@ -104,21 +104,9 @@ function getSensorsFromFile(callback) {
 
 function sendSensors(socket, values) {
   if (socket.connected) {
-    log(values);
+    //log(values);
     socket.emit(options.serverSensorsEvent, values, (settings) => {
-      if (settings === 'photo') {
-        photoShooter.on();
-        videoShooter.off();
-        fs.writeFile(path.resolve('/tmp/sleepSec'), '0');
-      } else if (settings === 'video') {
-        photoShooter.off();
-        videoShooter.on();
-        fs.writeFile(path.resolve('/tmp/sleepSec'), '0');
-      } else if (settings.indexOf('sleep') === 0) {
-        photoShooter.off();
-        videoShooter.off();
-        fs.writeFile(path.resolve('/tmp/sleepSec'), settings.substring(6));
-      }
+      brain.modeReceiver(settings.mode);
     });
 
     getSensorsFromFile((valuesFile) => {

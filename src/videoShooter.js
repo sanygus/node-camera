@@ -18,7 +18,7 @@ function takeVideo(settings, callback) {
     // .bitrate(settings.bitrate)//bits/s//1080p30 15Mbits/s or more
     .timeout(settings.time)
     .recordVideo(
-      `${dateformat(new Date(), 'yyyy-mm-dd\'T\'HH:MM:ss')} .h264`,
+      `${dateformat(new Date(), 'yyyy-mm-dd\'T\'HH:MM:ss')}.h264`,
       () => {
         callback();
       }

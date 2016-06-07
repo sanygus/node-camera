@@ -14,7 +14,12 @@ function getFileToSend(dirPath, callback) {
         let filesDir;
         if (err) { throw err; }
         filesDir = files.slice().filter((fileName) => {
-          /.*\.(jpg|h264)$/.test(fileName);
+          ///.*\.(jpg|h264)$/.test(fileName);
+          if((fileName.substring(fileName.indexOf('.'))==='.jpg')||(fileName.substring(fileName.indexOf('.'))==='.h264')) {
+            return true;
+          } else {
+            return false;
+          }
         }).sort().reverse();
         if (filesDir.length > 0) {
           callback(null, path.resolve(dirPath, filesDir[0]));

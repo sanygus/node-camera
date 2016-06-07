@@ -16,7 +16,7 @@ function takePhoto(settings, callback) {
     height: settings.height,
     quality: settings.quality,
   }).takePicture(
-    `${dateformat(new Date(), 'yyyy-mm-dd\'T\'HH:MM:ss')} .jpg`,
+    `${dateformat(new Date(), 'yyyy-mm-dd\'T\'HH:MM:ss')}.jpg`,
     () => {
       callback();
     }

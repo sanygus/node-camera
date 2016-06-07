@@ -9,7 +9,7 @@ module.exports = {
   defaultSettings: {
     fileSenderSettings: {
       enabled: true,
-      interval: 2000,
+      interval: 5000,
     },
     photoCamSettings: {
       enabled: false,
@@ -42,7 +42,7 @@ module.exports = {
     },
   },
   logFile: './camera.log',
-  brainInterval: 5000,
+  brainInterval: 1000,
   RPiHostname: 'raspberrypi',
   dbFile: '/tmp/camdb', // stat
   dbCompactionInterval: 60000,
