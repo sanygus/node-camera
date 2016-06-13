@@ -21,9 +21,7 @@ function getSensors(callback) {
     capacity: null,
     amperage: null,
     power: null,
-    ostP: null,
-    ostV: null,
-    ostS: null,
+    ost: null,
   };
   /* test values */
   async.parallel([
@@ -71,16 +69,13 @@ function getSensors(callback) {
     },
   ], (err, results) => {
     if (err) { throw err; }
-    sensorsValues.cputemp = results[0];//'C
-    sensorsValues.voltage = (results[1] * 2.9).toFixed(3);//В
-    sensorsValues.capacity = ((sensorsValues.voltage - 9.5) * 0.2 * 40).toFixed(3);//Ач
+    sensorsValues.cputemp = Number(results[0]);//'C
+    sensorsValues.voltage = Number((results[1] * 2.9).toFixed(3));//В
+    sensorsValues.capacity = Number(((sensorsValues.voltage - 9.5) * 0.2 * 40).toFixed(3));//Ач
     if (sensorsValues.capacity < 0) { sensorsValues.capacity = 0; }
-    sensorsValues.amperage = (results[2] * 1).toFixed(3);//А
-    sensorsValues.power = (sensorsValues.voltage * sensorsValues.amperage).toFixed(3);//Вт
-    sensorsValues.ostP = ((sensorsValues.capacity / 0.375) * 60 * 60).toFixed(1);//сек
-    sensorsValues.ostV = ((sensorsValues.capacity / 0.5) * 60 * 60).toFixed(1);//сек
-    sensorsValues.ostS = ((sensorsValues.capacity / 0.01) * 60 * 60).toFixed(1);//сек
-    sensorsValues.ostC = ((sensorsValues.capacity / sensorsValues.amperage) * 60 * 60).toFixed(1);//сек
+    sensorsValues.amperage = Number((results[2] * 1).toFixed(3));//А
+    sensorsValues.power = Number((sensorsValues.voltage * sensorsValues.amperage).toFixed(3));//Вт
+    sensorsValues.ost = Number(((sensorsValues.capacity / brain.getModeAmp()) * 60 * 60).toFixed(1));//сек
     callback(sensorsValues);
   });
 }

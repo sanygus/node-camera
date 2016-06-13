@@ -22,6 +22,24 @@ function cloneMode(inputArray) {
   return outArray;
 }
 
+module.exports.getModeAmp = function getModeAmp(callback) {
+  let sumT = 0;
+  let sumPhoto = 0;
+  let sumVideo = 0;
+  let sumSleep = 0;
+  let sumNothing = 0;
+  currentMode.forEach((mode) => {
+    sumT += mode.duration;
+    switch (mode.type) {
+      case 'photo': sumPhoto += mode.duration; break;
+      case 'video': sumVideo += mode.duration; break;
+      case 'sleep': sumSleep += mode.duration; break;
+      default: sumNothing += mode.duration; break;
+    }
+  });
+  return ((sumPhoto / sumT) * 0.4 + (sumVideo / sumT) * 0.5 + (sumSleep / sumT) * 0.01 + (sumNothing / sumT) * 0.275).toFixed(3); 
+}
+
 module.exports.modeReceiver = function modeReceiver(mode) {
   if (JSON.stringify(mode) !== JSON.stringify(currentMode)) {
     photoShooter.off();
@@ -75,6 +93,7 @@ function decide(/*data, */callback) {
         } else {
           actions = actions.slice(1);
         }
+        break;
     }
   } else { if (currentMode.length > 0) {actions = cloneMode(currentMode);} }
   console.log(actions);
