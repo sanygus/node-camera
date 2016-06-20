@@ -35,7 +35,7 @@ while(True):
     file = open("/tmp/voltage","w")
     file1 = open("/tmp/amperage","w")
     file.write("0.1")
-    file1.write("0.1")
+    file1.write("2.476")
     file.close()
     file1.close()
     print("IOError")
