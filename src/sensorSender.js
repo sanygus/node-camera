@@ -75,7 +75,7 @@ function getSensors(callback) {
     if (sensorsValues.capacity < 0) { sensorsValues.capacity = 0; }
     sensorsValues.amperage = Number(((results[2] * 1 - 2.456) / 0.183).toFixed(3));//А
     sensorsValues.power = Number(((sensorsValues.voltage / 2.9) * sensorsValues.amperage).toFixed(3));//Вт
-    sensorsValues.ost = Number(((sensorsValues.capacity / brain.getModeAmp()) * 60 * 60).toFixed(1));//сек
+    sensorsValues.ost = Number(((sensorsValues.capacity / (sensorsValues.amperage / 2.9)) * 60 * 60).toFixed(1));//сек
     callback(sensorsValues);
   });
 }

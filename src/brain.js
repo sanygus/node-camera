@@ -21,7 +21,7 @@ function cloneMode(inputArray) {
   });
   return outArray;
 }
-
+/*
 module.exports.getModeAmp = function getModeAmp(callback) {
   let sumT = 0;
   let sumPhoto = 0;
@@ -39,7 +39,7 @@ module.exports.getModeAmp = function getModeAmp(callback) {
   });
   return ((sumPhoto / sumT) * 0.4 + (sumVideo / sumT) * 0.5 + (sumSleep / sumT) * 0.01 + (sumNothing / sumT) * 0.275).toFixed(3); 
 }
-
+*/
 module.exports.modeReceiver = function modeReceiver(mode) {
   if (JSON.stringify(mode) !== JSON.stringify(currentMode)) {
     photoShooter.off();
