@@ -14,7 +14,7 @@ while(True):
     file2 = open("/tmp/amperage","w")
     smbus.SMBus(1).write_byte(0x08, 252)
     val2 = smbus.SMBus(1).read_byte(0x08) + 0.0
-    file2.write(repr(val2 * 4 * 5 / 1024))
+    file2.write(repr((val2 + 519) * 5 / 1024))
     file2.close()
 
     file3 = open("/tmp/sleepSec","r")
