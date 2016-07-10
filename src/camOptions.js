@@ -26,7 +26,7 @@ module.exports = {
       framerate: 30, // fps
       bitrate: 1500000, // bits/s // 1080p30 a high quality bitrate would be 15Mbits/s or more
       time: 10000, // ms
-      interval: 15000, // ms
+      interval: 20000, // ms
     },
     sensorsSettings: {
       enabled: true,
