@@ -16,7 +16,6 @@ while(True):
     val2 = smbus.SMBus(1).read_byte(0x08) + 0.0
     file2.write(repr((val2) * 5 / 1024 / 0.186))
     file2.close()
-#    print(val2 - 2)
 
     file3 = open("/tmp/sleepSec","r")
     ch = int(file3.read())
