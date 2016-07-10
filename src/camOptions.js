@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  serverAddress: 'http://hubsolar.cloudapp.net:2346',
+  serverAddress: 'http://192.168.0.122:2929',
   serverSensorsEvent: 'sensors',
   serverFilesEvent: 'file',
   sensorsFile: '/tmp/sensors',
@@ -23,9 +23,9 @@ module.exports = {
       enabled: false,
       width: 1280, // px
       height: 720, // px
-      framerate: 10, // fps
+      framerate: 30, // fps
       bitrate: 1500000, // bits/s // 1080p30 a high quality bitrate would be 15Mbits/s or more
-      time: 5000, // ms
+      time: 10000, // ms
       interval: 15000, // ms
     },
     sensorsSettings: {
