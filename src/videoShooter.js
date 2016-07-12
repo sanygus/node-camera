@@ -3,6 +3,7 @@
 const db = require('./db');
 const options = require('./camOptions');
 const dateformat = require('dateformat');
+const fs = require('fs');
 const path = require('path');
 const Camera = require('camerapi');
 const cam = new Camera();
@@ -18,9 +19,9 @@ function takeVideo(settings, callback) {
     // .bitrate(settings.bitrate)//bits/s//1080p30 15Mbits/s or more
     .timeout(settings.time)
     .recordVideo(
-      `${dateformat(new Date(), 'yyyy-mm-dd\'T\'HH:MM:ss')}.h264`,
-      () => {
-        callback();
+      `${dateformat(new Date(), 'yyyy-mm-dd\'T\'HH:MM:ss')}.tmp`,
+      (file) => {
+        fs.rename(file, file.replace('.tmp', '.h264'), callback);
       }
     );
 }
