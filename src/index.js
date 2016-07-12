@@ -1,5 +1,3 @@
-'use strict';
-
 const options = require('./camOptions');
 const db = require('./db');
 const statisticsSender = require('./statisticsSender');

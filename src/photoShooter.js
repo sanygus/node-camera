@@ -1,8 +1,7 @@
-'use strict';
-
 const db = require('./db');
 const options = require('./camOptions');
 const dateformat = require('dateformat');
+const fs = require('fs');
 const path = require('path');
 const Camera = require('camerapi');
 const cam = new Camera();
@@ -16,9 +15,9 @@ function takePhoto(settings, callback) {
     height: settings.height,
     quality: settings.quality,
   }).takePicture(
-    `${dateformat(new Date(), 'yyyy-mm-dd\'T\'HH:MM:ss')}.jpg`,
-    () => {
-      callback();
+    `${dateformat(new Date(), 'yyyy-mm-dd\'T\'HH:MM:ss')}.tmpimg`,
+    (fileName) => {
+      fs.rename(fileName, fileName.replace('.tmpimg', '.jpg'), callback);
     }
   );
 }

@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = {
   serverAddress: 'http://192.168.0.122:2929',
   serverSensorsEvent: 'sensors',

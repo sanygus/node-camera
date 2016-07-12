@@ -1,5 +1,3 @@
-'use strict';
-
 const options = require('./camOptions');
 const fs = require('fs');
 const dateformat = require('dateformat');

@@ -1,5 +1,3 @@
-'use strict';
-
 const db = require('./db');
 const options = require('./camOptions');
 const connection = require('./connection');

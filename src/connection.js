@@ -1,5 +1,3 @@
-'use strict';
-
 const ioClient = require('socket.io-client');
 const log = require('./log');
 let socket = {};

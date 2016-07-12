@@ -1,5 +1,3 @@
-'use strict';
-
 const dateformat = require('dateformat');
 const path = require('path');
 const connection = require('./connection');

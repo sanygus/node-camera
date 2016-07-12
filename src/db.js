@@ -1,5 +1,3 @@
-'use strict';
-
 const options = require('./camOptions');
 const DataStore = require('nedb');
 const path = require('path');

@@ -1,5 +1,3 @@
-'use strict';
-
 const async = require('async');
 const os = require('os');
 const diskspace = require('diskspace');
