@@ -3,7 +3,7 @@ module.exports = {
   serverSensorsEvent: 'sensors',
   serverFilesEvent: 'file',
   sensorsFile: '/tmp/sensors',
-  filesDir: '/tmp/cam',
+  filesDir: '/tmpvid/cam',
   defaultSettings: {
     fileSenderSettings: {
       enabled: true,
@@ -21,7 +21,7 @@ module.exports = {
       enabled: false,
       width: 1280, // px
       height: 720, // px
-      framerate: 25, // fps
+      framerate: 10, // fps
       bitrate: 1500000, // bits/s // 1080p30 a high quality bitrate would be 15Mbits/s or more
       time: 10000, // ms
       interval: 20000, // ms
