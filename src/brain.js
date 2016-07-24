@@ -107,7 +107,7 @@ function brain() {
     setTimeout(brain, options.brainInterval);
   });
   //});
-  log('brain tick');
+  //log('brain tick');
 }
 
 module.exports.init = function brainInit() {
