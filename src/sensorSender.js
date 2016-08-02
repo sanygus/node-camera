@@ -99,7 +99,10 @@ function sendSensors(socket, values) {
   if (socket.connected) {
     //log(values);
     socket.emit(options.serverSensorsEvent, values, (settings) => {
+      console.log('given settings');
+      console.log(settings);
       brain.modeReceiver(settings.mode);
+      brain.RTVReceiver(settings.RTV);
     });
 
     getSensorsFromFile((valuesFile) => {

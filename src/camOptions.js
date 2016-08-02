@@ -6,7 +6,7 @@ module.exports = {
   filesDir: '/tmpvid/cam',
   defaultSettings: {
     fileSenderSettings: {
-      enabled: true,
+      enabled: false,
       interval: 5000,
     },
     photoCamSettings: {
