@@ -22,3 +22,11 @@ module.exports.init = function connectionStart(srvAddr) {
 module.exports.getSocket = function getSocket(callback) {
   callback(null, socket);
 };
+
+module.exports.sendToServer = function sendToServer(eventName, data, callback) {
+  if (socket.connected) {
+    socket.emit(eventName, data, callback);
+  } else {
+    callback('no connect');
+  }
+};

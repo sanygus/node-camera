@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 //const systemStat = require('./systemStat');
 const fileSender = require('./fileSender');
-//const connection = require('./connection');
+const connection = require('./connection');
 const photoShooter = require('./photoShooter');
 const videoShooter = require('./videoShooter');
 //const sensorSender = require('./sensorSender');
@@ -22,6 +22,14 @@ function cloneMode(inputArray) {
     outArray.push({ type: mode.type, duration: mode.duration });
   });
   return outArray;
+}
+
+function sendRTVstatus() {
+  connection.sendToServer('RTVstatus', RTV, (sendErr) => {
+    if (sendErr) {
+      setTimeout(sendRTVstatus, 4000);
+    }
+  });
 }
 /*
 module.exports.getModeAmp = function getModeAmp(callback) {
@@ -46,7 +54,7 @@ module.exports.modeReceiver = function modeReceiver(mode) {
   if (JSON.stringify(mode) !== JSON.stringify(currentMode)) {
     photoShooter.off();
     videoShooter.off();
-    currentMode = cloneMode(mode);
+    currentMode = cloneMode(mode);//защита от "дурака"
     actions = cloneMode(mode);
     console.log('new mode!');
   }
@@ -66,10 +74,11 @@ module.exports.RTVReceiver = function RTVReceiver(newRTV) {
     } else {
       console.log('command off');
       exec('killall h264_v4l2_rtspserver'/*, (error, stout, sterr) => {
-        log(`error: ${error}, stout: ${stout}, sterr: ${sterr}`);
+          log(`error: ${error}, stout: ${stout}, sterr: ${sterr}`);
       }*/);
     }
     console.log('new RTV ' + RTV);
+    sendRTVstatus();
   }
 }
 
