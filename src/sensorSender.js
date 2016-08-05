@@ -68,12 +68,12 @@ function getSensors(callback) {
   ], (err, results) => {
     if (err) { throw err; }
     sensorsValues.cputemp = Number(results[0]);//'C
-    sensorsValues.voltage = Number((results[1] * 2.9).toFixed(3));//В
+    sensorsValues.voltage = Number((results[1] * 2.95).toFixed(3));//В
     sensorsValues.capacity = Number(((sensorsValues.voltage - 9.5) * 0.2 * 40).toFixed(3));//Ач
     if (sensorsValues.capacity < 0) { sensorsValues.capacity = 0; }
     sensorsValues.amperage = Number((results[2] * 1).toFixed(3));//А
-    sensorsValues.power = Number(((sensorsValues.voltage / 2.9) * sensorsValues.amperage).toFixed(3));//Вт
-    sensorsValues.ost = Number(((sensorsValues.capacity / (sensorsValues.amperage / 2.9)) * 60 * 60).toFixed(1));//сек
+    sensorsValues.power = Number((sensorsValues.voltage * sensorsValues.amperage).toFixed(3));//Вт
+    sensorsValues.ost = Number(((sensorsValues.capacity / sensorsValues.amperage) * 60 * 60).toFixed(1));//сек
     callback(sensorsValues);
   });
 }
