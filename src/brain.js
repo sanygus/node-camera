@@ -68,14 +68,10 @@ module.exports.RTVReceiver = function RTVReceiver(newRTV) {
       videoShooter.off();
       fileSender.off();
       console.log('command on');
-      exec('h264_v4l2_rtspserver -F 5'/*, (error, stout, sterr) => {
-        log(`error: ${error}, stout: ${stout}, sterr: ${sterr}`);
-      }*/);
+      exec('v4l2rtspserver -S5 -F 5');
     } else {
       console.log('command off');
-      exec('killall h264_v4l2_rtspserver'/*, (error, stout, sterr) => {
-          log(`error: ${error}, stout: ${stout}, sterr: ${sterr}`);
-      }*/);
+      exec('killall v4l2rtspserver');
     }
     console.log('new RTV ' + RTV);
     sendRTVstatus();
