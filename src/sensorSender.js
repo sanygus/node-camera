@@ -16,6 +16,7 @@ function getSensors(callback) {
     date: dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
     cputemp: null,
     voltage: null,
+    voltageBat: null,
     capacity: null,
     amperage: null,
     power: null,
@@ -67,9 +68,10 @@ function getSensors(callback) {
     },
   ], (err, results) => {
     if (err) { throw err; }
-    sensorsValues.cputemp = Number(results[0]);//'C
-    sensorsValues.voltage = Number((results[1] * 2.95).toFixed(3));//В
-    sensorsValues.capacity = Number(((sensorsValues.voltage - 9.5) * 0.2 * 40).toFixed(3));//Ач
+    sensorsValues.cputemp = Number(results[0] * 1);//'C
+    sensorsValues.voltage = 5;//В Power
+    sensorsValues.voltageBat = Number((results[1] * 1).toFixed(3));//В
+    sensorsValues.capacity = Number(((sensorsValues.voltageBat - 9.5) * 0.2 * 40).toFixed(3));//Ач
     if (sensorsValues.capacity < 0) { sensorsValues.capacity = 0; }
     sensorsValues.amperage = Number((results[2] * 1).toFixed(3));//А
     sensorsValues.power = Number((sensorsValues.voltage * sensorsValues.amperage).toFixed(3));//Вт
