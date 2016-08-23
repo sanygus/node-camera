@@ -71,7 +71,7 @@ function getSensors(callback) {
     sensorsValues.cputemp = Number(results[0] * 1);//'C
     sensorsValues.voltage = 5;//В Power
     sensorsValues.voltageBat = Number((results[1] * 1).toFixed(3));//В
-    sensorsValues.capacity = Number(((sensorsValues.voltageBat - 9.5) * 0.2 * 40).toFixed(3));//Ач
+    sensorsValues.capacity = Number(((sensorsValues.voltageBat - 2.9) * 4.47856).toFixed(3));//Ач
     if (sensorsValues.capacity < 0) { sensorsValues.capacity = 0; }
     sensorsValues.amperage = Number((results[2] * 1).toFixed(3));//А
     sensorsValues.power = Number((sensorsValues.voltage * sensorsValues.amperage).toFixed(3));//Вт

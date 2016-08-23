@@ -8,13 +8,13 @@ while(True):
     file1 = open("/tmp/voltage","w")
     smbus.SMBus(1).write_byte(0x08, 251)
     val1 = smbus.SMBus(1).read_byte(0x08) + 0.0
-    file1.write(repr(val1 * 4 * 5 / 1024))
+    file1.write(repr((val1 + 595) * 5 / 1024))
     file1.close()
 
     file2 = open("/tmp/amperage","w")
     smbus.SMBus(1).write_byte(0x08, 252)
     val2 = smbus.SMBus(1).read_byte(0x08) + 0.0
-    file2.write(repr((val2) * 5 / 1024 / 0.186))
+    file2.write(repr(val2 * 5 / 1024 / 0.186))
     file2.close()
 
     file3 = open("/tmp/sleepSec","r")
