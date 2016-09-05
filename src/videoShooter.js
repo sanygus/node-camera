@@ -81,11 +81,11 @@ module.exports.takeOneVideo  = function takeOneVideo(time) {
       .height(settings.height)
       .framerate(settings.framerate)
       // .bitrate(settings.bitrate)//bits/s//1080p30 15Mbits/s or more
-      .timeout(time)
+      .timeout(time * 1000)
       .recordVideo(
         `${dateformat(new Date(), 'yyyy-mm-dd\'T\'HH:MM:ss')}.tmpvid`,
         (fileName) => {
-          fs.rename(fileName, fileName.replace('.tmpvid', '.h264'), callback);
+          fs.rename(fileName, fileName.replace('.tmpvid', '.h264'));
         }
       );
   });
