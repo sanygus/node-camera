@@ -74,17 +74,19 @@ module.exports.setInterval = function setInterval(interval) {
 };
 
 module.exports.takeOneVideo  = function takeOneVideo(time) {
-  cam
-    .nopreview()
-    .width(settings.width)
-    .height(settings.height)
-    .framerate(settings.framerate)
-    // .bitrate(settings.bitrate)//bits/s//1080p30 15Mbits/s or more
-    .timeout(time)
-    .recordVideo(
-      `${dateformat(new Date(), 'yyyy-mm-dd\'T\'HH:MM:ss')}.tmpvid`,
-      (fileName) => {
-        fs.rename(fileName, fileName.replace('.tmpvid', '.h264'), callback);
-      }
-    );
+  db.loadSettings('videoCamSettings', (errLoad, settings) => {
+    cam
+      .nopreview()
+      .width(settings.width)
+      .height(settings.height)
+      .framerate(settings.framerate)
+      // .bitrate(settings.bitrate)//bits/s//1080p30 15Mbits/s or more
+      .timeout(time)
+      .recordVideo(
+        `${dateformat(new Date(), 'yyyy-mm-dd\'T\'HH:MM:ss')}.tmpvid`,
+        (fileName) => {
+          fs.rename(fileName, fileName.replace('.tmpvid', '.h264'), callback);
+        }
+      );
+  });
 }
