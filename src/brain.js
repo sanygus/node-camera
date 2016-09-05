@@ -15,6 +15,7 @@ let currentMode = [];
 let actions = [];
 let timer;
 let RTV = false;
+let videoTaking = false;
 
 function cloneMode(inputArray) {
   let outArray = [];
@@ -101,10 +102,17 @@ function decide(/*data, */callback) {
           break;
         case 'video': 
           if (actions[0].duration > 0) {
-            videoShooter.on(); 
+            //videoShooter.on(); 
+            if(!videoTaking) {
+              videoShooter.takeOneVideo(actions[0].duration);
+              videoTaking = true;
+              log('video taking on');
+            }
             actions[0].duration -= 1;
           } else {
             videoShooter.off();
+            videoTaking = false;
+            log('video taking off');
             actions = actions.slice(1);
           }
           break;
